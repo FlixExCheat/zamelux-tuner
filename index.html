@@ -3,593 +3,868 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zamelux Green E9-2 Tuner</title>
+    <title>Zamelux E9-2 Protokoll-Tuner</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --card: #1e293b;
+            --bg: #0b0f19;
+            --card: #151b2b;
             --text: #e2e8f0;
-            --muted: #94a3b8;
+            --muted: #64748b;
             --accent: #10b981;
-            --accent-hover: #059669;
+            --accent-dim: #059669;
             --danger: #ef4444;
-            --danger-hover: #dc2626;
+            --danger-dim: #b91c1c;
             --warning: #f59e0b;
+            --info: #3b82f6;
+            --border: #1e293b;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background: var(--bg);
             color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
+            line-height: 1.5;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 2rem 1rem;
+            padding: 1rem;
         }
 
-        .container {
-            width: 100%;
-            max-width: 480px;
-        }
+        .container { max-width: 680px; margin: 0 auto; }
 
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-        }
-
-        header p {
-            color: var(--muted);
-            font-size: 0.875rem;
-        }
+        header { text-align: center; margin-bottom: 1.5rem; }
+        header h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+        header p { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
 
         .card {
             background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 1rem;
-            padding: 1.5rem;
+            padding: 1.25rem;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
         }
 
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.25rem;
+        }
+        .tab {
+            flex: 1;
+            min-width: 90px;
+            padding: 0.625rem;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 0.625rem;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .tab:hover:not(.active) { background: #334155; color: var(--text); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Status */
         .status-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
-
-        .status-badge {
+        .badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.375rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            background: #334155;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: #1e293b;
             color: var(--muted);
+            border: 1px solid var(--border);
         }
-
-        .status-badge.connected {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--accent);
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: currentColor;
-        }
+        .badge.ok { background: rgba(16,185,129,0.12); color: var(--accent); border-color: rgba(16,185,129,0.3); }
+        .badge.warn { background: rgba(245,158,11,0.12); color: var(--warning); border-color: rgba(245,158,11,0.3); }
+        .badge.err { background: rgba(239,68,68,0.12); color: var(--danger); border-color: rgba(239,68,68,0.3); }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
         .btn {
             width: 100%;
             padding: 0.875rem;
             border: none;
             border-radius: 0.75rem;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            margin-bottom: 0.75rem;
         }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-dim); transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover:not(:disabled) { background: var(--danger-dim); transform: translateY(-1px); }
+        .btn-secondary { background: #1e293b; color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover:not(:disabled) { background: #334155; }
+        .btn-info { background: var(--info); color: white; }
+        .btn-info:hover:not(:disabled) { background: #2563eb; }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn-row { display: flex; gap: 0.75rem; }
+        .btn-row .btn { flex: 1; margin-bottom: 0; }
+
+        .safety {
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 0.75rem;
+            padding: 0.875rem;
+            margin-bottom: 1rem;
+            font-size: 0.82rem;
+            color: #fcd34d;
         }
+        .safety strong { display: block; margin-bottom: 0.2rem; }
 
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: var(--accent-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-            margin-top: 0.75rem;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            background: var(--danger-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: #334155;
-            color: var(--text);
-            margin-top: 0.75rem;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: #475569;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-
-        .info-item {
-            background: #334155;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .info-item .label {
-            color: var(--muted);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
-        }
-
-        .info-item .value {
-            font-weight: 600;
-            color: var(--text);
-        }
-
+        /* Console / Sniffer */
         .console {
             background: #020617;
-            border: 1px solid #334155;
+            border: 1px solid var(--border);
             border-radius: 0.75rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            max-height: 200px;
+            padding: 0.75rem;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 0.78rem;
+            max-height: 320px;
             overflow-y: auto;
-            color: #4ade80;
+            color: #e2e8f0;
         }
+        .entry { margin-bottom: 0.4rem; padding: 0.2rem 0; border-bottom: 1px solid #0f172a; }
+        .entry:last-child { border-bottom: none; }
+        .entry .ts { color: #475569; margin-right: 0.5rem; font-size: 0.7rem; }
+        .entry .dir { font-weight: 800; margin-right: 0.4rem; }
+        .entry .dir.tx { color: var(--accent); }
+        .entry .dir.rx { color: var(--info); }
+        .entry .dir.sys { color: var(--muted); }
+        .entry .hex { color: #e2e8f0; word-break: break-all; }
+        .entry .ascii { color: #64748b; margin-left: 0.5rem; }
+        .entry .note { color: var(--warning); margin-left: 0.5rem; font-style: italic; }
 
-        .console .entry {
-            margin-bottom: 0.5rem;
-            word-break: break-all;
-        }
-
-        .console .entry.error {
-            color: #f87171;
-        }
-
-        .console .entry.warn {
-            color: #fbbf24;
-        }
-
-        .console .entry.info {
-            color: #60a5fa;
-        }
-
-        .safety-notice {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            color: #fbbf24;
-        }
-
-        .safety-notice strong {
-            display: block;
-            margin-bottom: 0.25rem;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .command-section {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #334155;
-        }
-
-        .command-section h3 {
-            font-size: 0.875rem;
-            color: var(--muted);
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .hex-input-group {
+        .toolbar {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 0.75rem;
+            flex-wrap: wrap;
         }
-
-        .hex-input {
-            flex: 1;
-            background: #020617;
-            border: 1px solid #334155;
-            color: var(--text);
-            padding: 0.625rem;
-            border-radius: 0.5rem;
-            font-family: monospace;
-            font-size: 0.875rem;
-        }
-
-        .hex-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
         .small-btn {
-            padding: 0.625rem 1rem;
-            background: #334155;
-            border: none;
+            padding: 0.4rem 0.75rem;
+            background: #1e293b;
+            border: 1px solid var(--border);
             color: var(--text);
             border-radius: 0.5rem;
             cursor: pointer;
+            font-size: 0.8rem;
             font-weight: 600;
-            white-space: nowrap;
         }
+        .small-btn:hover { background: #334155; }
+        .small-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        .small-btn:hover {
-            background: #475569;
+        /* Inputs */
+        .field { margin-bottom: 0.875rem; }
+        .field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.35rem;
         }
+        .field input, .field select, .field textarea {
+            width: 100%;
+            background: #020617;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .field textarea { font-family: monospace; min-height: 60px; resize: vertical; }
 
-        @media (max-width: 400px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        @media (max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .template-btn {
+            padding: 0.6rem;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: left;
+            font-family: monospace;
+        }
+        .template-btn:hover { border-color: var(--accent); background: #1e293b; }
+        .template-btn .desc { display: block; font-family: sans-serif; font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+        .stats span { display: flex; align-items: center; gap: 0.3rem; }
+
+        .hidden { display: none !important; }
+
+        .hint {
+            background: rgba(59,130,246,0.08);
+            border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 0.625rem;
+            padding: 0.75rem;
+            font-size: 0.82rem;
+            color: #93c5fd;
+            margin-bottom: 1rem;
+        }
+        .hint strong { color: #60a5fa; }
+
+        /* Brute force progress */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🛴 Zamelux Green Tuner</h1>
-            <p>E9-2 Privatgelände Speedlimit-Tool</p>
+            <h1>🛴 Zamelux E9-2 Protokoll-Tuner</h1>
+            <p>Sniffer • Command Lab • Brute Force</p>
         </header>
 
-        <div class="safety-notice">
-            <strong>⚠️ Controller Brick Safe</strong>
-            Diese App ändert <em>nur</em> das Software-Speedlimit. 
-            Keine Ampere- oder Phasenstrom-Modifikationen – dein HW9027-Controller bleibt sicher.
+        <div class="safety">
+            <strong>⚠️ Brick-Safe Modus aktiv</strong>
+            Es werden nur Speedlimit-Befehle getestet. Keine Ampere-Änderungen. 
+            Falsche Befehle werden in 99% der Fälle ignoriert.
         </div>
 
         <div class="card">
             <div class="status-row">
-                <span class="status-badge" id="statusBadge">
+                <span class="badge" id="statusBadge">
                     <span class="dot"></span>
-                    <span id="statusText">Nicht verbunden</span>
+                    <span id="statusText">Offline</span>
                 </span>
-                <span style="color: var(--muted); font-size: 0.875rem;" id="deviceName">-</span>
+                <span style="color: var(--muted); font-size: 0.8rem;" id="deviceName">-</span>
             </div>
 
             <button class="btn btn-primary" id="connectBtn" onclick="connect()">
-                <span>🔌</span> Mit Scooter verbinden
+                <span>🔌</span> Mit M0Robot verbinden
             </button>
 
-            <div id="controls" class="hidden">
-                <button class="btn btn-danger" id="unlockBtn" onclick="sendUnlock()" disabled>
-                    <span>🔓</span> Speedlimit aufheben (Privatgelände)
+            <div class="btn-row hidden" id="connectedActions">
+                <button class="btn btn-secondary" onclick="sendPing()">
+                    <span>📡</span> Ping testen
                 </button>
-                <button class="btn btn-secondary" id="resetBtn" onclick="sendReset()" disabled>
-                    <span>🔒</span> Zurücksetzen auf 20 km/h
+                <button class="btn btn-danger" onclick="disconnect()">
+                    <span>✕</span> Trennen
                 </button>
             </div>
+        </div>
 
-            <div class="info-grid" id="infoGrid" style="display: none;">
-                <div class="info-item">
-                    <div class="label">Modell</div>
-                    <div class="value">E9-2</div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('tuner')">🔧 Tuner</div>
+            <div class="tab" onclick="switchTab('sniffer')">👁️ Sniffer</div>
+            <div class="tab" onclick="switchTab('lab')">🧪 Command Lab</div>
+            <div class="tab" onclick="switchTab('brute')">🎯 Brute Force</div>
+        </div>
+
+        <!-- TAB: TUNER -->
+        <div id="tab-tuner" class="tab-content active">
+            <div class="card">
+                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">Speedlimit Steuerung</h3>
+                
+                <div class="btn-row">
+                    <button class="btn btn-danger" id="btnUnlock" onclick="sendUnlock()" disabled>
+                        <span>🔓</span> Unlock (Privat)
+                    </button>
+                    <button class="btn btn-secondary" id="btnReset" onclick="sendReset()" disabled>
+                        <span>🔒</span> Reset 20 km/h
+                    </button>
                 </div>
-                <div class="info-item">
-                    <div class="label">Controller</div>
-                    <div class="value">HW9027</div>
+
+                <div class="grid-2" style="margin-top: 1rem;">
+                    <div class="field">
+                        <label>Speedlimit (km/h)</label>
+                        <input type="number" id="customSpeed" value="25" min="1" max="99">
+                    </div>
+                    <div class="field">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-info" style="margin:0;" onclick="sendCustomSpeed()" disabled id="btnCustomSpeed">
+                            Speed setzen
+                        </button>
+                    </div>
                 </div>
-                <div class="info-item">
-                    <div class="label">Batterie</div>
-                    <div class="value">36V / 7.5Ah</div>
-                </div>
-                <div class="info-item">
-                    <div class="label">Stromlimit</div>
-                    <div class="value" style="color: var(--accent);">16A (fix)</div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--muted); text-transform: uppercase;">Schnell-Test Befehle</h3>
+                <div class="template-grid">
+                    <button class="template-btn" onclick="quickSend('55 AA 03 1B 00 00 00 00 00 00 00 00 00')">
+                        55 AA 03 1B...
+                        <span class="desc">Alt-Header, Gear-Byte</span>
+                    </button>
+                    <button class="template-btn" onclick="quickSend('01 03 00 00 00 0F 00 46 00 80 02 00 00 00')">
+                        01 03 00 0F...
+                        <span class="desc">QS-S4 Gear 3</span>
+                    </button>
+                    <button class="template-btn" onclick="quickSend('5A A5 01 3E 00 00 00 00 00 00 00 00 00 00 00')">
+                        5A A5 01 3E...
+                        <span class="desc">Ninebot-Style</span>
+                    </button>
+                    <button class="template-btn" onclick="quickSend('A5 5A 01 00 00 00 00 00 00 00 00 00 00 00')">
+                        A5 5A 01 00...
+                        <span class="desc">Kugoo-Style</span>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="command-section">
-                <h3>🔧 Entwickler: Hex-Command Sender</h3>
-                <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.75rem;">
-                    Sende beliebige Hex-Befehle an die RX-Charakteristik. 
-                    Die Checksumme wird automatisch berechnet (XOR über alle Bytes).
-                </p>
-                <div class="hex-input-group">
-                    <input type="text" class="hex-input" id="customHex" 
-                           placeholder="z.B. 01 03 00 00 00 85 00 46..." 
-                           maxlength="95">
-                    <button class="small-btn" onclick="sendCustomHex()">Senden</button>
+        <!-- TAB: SNIFFER -->
+        <div id="tab-sniffer" class="tab-content">
+            <div class="card">
+                <div class="stats">
+                    <span>📤 TX: <b id="statTx">0</b></span>
+                    <span>📥 RX: <b id="statRx">0</b></span>
+                    <span>⏱️ Letzte: <b id="statLast">-</b></span>
                 </div>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <button class="small-btn" onclick="setHex('01 03 00 00 00 0F 00 46 00 80 02 00 00 00')">Std-Frame</button>
-                    <button class="small-btn" onclick="setHex('55 AA 03 1E 00 00 00 00 00 00 00 00 00')">Alt-Header</button>
-                    <button class="small-btn" onclick="setHex('5A A5 01 3E 00 00 00 00 00 00 00 00 00 00 00')">Ninebot-Style</button>
+                <div class="toolbar">
+                    <button class="small-btn" onclick="clearLog()">🗑️ Clear</button>
+                    <button class="small-btn" onclick="exportLog()">💾 Export CSV</button>
+                    <button class="small-btn" onclick="toggleAutoScroll()" id="btnAutoScroll">⏸️ Pause</button>
                 </div>
+                <div class="console" id="snifferConsole"></div>
             </div>
-
-            <div id="console" class="console" style="display: none;"></div>
         </div>
 
-        <div class="card" style="text-align: center; font-size: 0.75rem; color: var(--muted);">
-            <p>Nordic UART Service • M0Robot992538</p>
-            <p style="margin-top: 0.25rem;">Nur für Privatgelände. Keine öffentliche Straßen-Nutzung.</p>
+        <!-- TAB: COMMAND LAB -->
+        <div id="tab-lab" class="tab-content">
+            <div class="card">
+                <div class="field">
+                    <label>Raw Hex Command</label>
+                    <input type="text" id="rawHex" placeholder="z.B. 55 AA 03 1B 0F ...">
+                </div>
+                <div class="grid-2">
+                    <div class="field">
+                        <label>Checksumme</label>
+                        <select id="checksumMode">
+                            <option value="xor">XOR (alle Bytes)</option>
+                            <option value="xor_skip">XOR (ohne Header)</option>
+                            <option value="sum">Summe (mod 256)</option>
+                            <option value="crc8">CRC-8</option>
+                            <option value="none">Keine (manuell)</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Header-Format</label>
+                        <select id="headerMode">
+                            <option value="none">Raw (kein Auto)</option>
+                            <option value="55aa">55 AA + Länge</option>
+                            <option value="5aa5">5A A5 + Länge</option>
+                            <option value="01">01 03 (QS-S4)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Payload (Hex, ohne Header/Checksum)</label>
+                    <input type="text" id="payloadHex" placeholder="z.B. 1B 00 00 00 00 00 00 00 00">
+                </div>
+                <button class="btn btn-primary" onclick="sendFromLab()" id="btnLabSend" disabled>
+                    <span>🚀</span> Befehl senden
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted);">Protokoll-Templates</h3>
+                <div class="template-grid">
+                    <button class="template-btn" onclick="loadTemplate('m0robot')">
+                        M0Robot Standard
+                        <span class="desc">55 AA 03 [CMD] [VAL] ...</span>
+                    </button>
+                    <button class="template-btn" onclick="loadTemplate('qss4')">
+                        QS-S4 LCD
+                        <span class="desc">01 03 00 00 00 [GEAR] ...</span>
+                    </button>
+                    <button class="template-btn" onclick="loadTemplate('ninebot')">
+                        Ninebot-Style
+                        <span class="desc">5A A5 01 3E ...</span>
+                    </button>
+                    <button class="template-btn" onclick="loadTemplate('kugoo')">
+                        Kugoo G-Booster
+                        <span class="desc">A5 5A 01 ...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: BRUTE FORCE -->
+        <div id="tab-brute" class="tab-content">
+            <div class="card">
+                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase;">Systematischer Brute Force</h3>
+                
+                <div class="hint">
+                    <strong>So funktioniert's:</strong> Die App sendet Befehle mit inkrementierenden Werten und wartet jeweils auf eine Antwort oder Reaktion (Piepton, Display). Halte den Scooter bereit!
+                </div>
+
+                <div class="grid-2">
+                    <div class="field">
+                        <label>Header (Hex)</label>
+                        <input type="text" id="bfHeader" value="55 AA 03">
+                    </div>
+                    <div class="field">
+                        <label>Command Byte (Start)</label>
+                        <input type="text" id="bfCmdStart" value="10">
+                    </div>
+                    <div class="field">
+                        <label>Wert-Byte (Start)</label>
+                        <input type="text" id="bfValStart" value="00">
+                    </div>
+                    <div class="field">
+                        <label>Range (0 bis X)</label>
+                        <input type="number" id="bfRange" value="50">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Delay zwischen Befehlen (ms)</label>
+                    <input type="number" id="bfDelay" value="800" min="200" max="5000">
+                </div>
+
+                <button class="btn btn-danger" onclick="startBruteForce()" id="btnBruteStart" disabled>
+                    <span>🎯</span> Brute Force starten
+                </button>
+                <button class="btn btn-secondary hidden" onclick="stopBruteForce()" id="btnBruteStop">
+                    <span>🛑</span> Stoppen
+                </button>
+
+                <div class="progress-bar"><div class="progress-fill" id="bruteProgress"></div></div>
+                <div style="text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem;" id="bruteStatus">Bereit</div>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center; font-size: 0.7rem; color: var(--muted); border: none; background: transparent;">
+            <p>UUID: 6E400001-B5A3-F393-E0A9-E50E24DCCA9E</p>
+            <p style="margin-top: 0.2rem;">Nur für Privatgelände. Keine öffentliche Nutzung.</p>
         </div>
     </div>
 
     <script>
         // ========================================================================
-        // NORDIC UART SERVICE UUIDs (aus deinem Screenshot)
+        // UUIDs (aus deinem Screenshot)
         // ========================================================================
-        const UART_SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-        const UART_RX_UUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // Write
-        const UART_TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // Notify
+        const UART_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+        const UART_RX      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+        const UART_TX      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
         // ========================================================================
         // STATE
         // ========================================================================
-        let device = null;
-        let server = null;
-        let rxCharacteristic = null;
-        let txCharacteristic = null;
-        let isConnected = false;
+        let device = null, server = null, rxChar = null, txChar = null;
+        let isConnected = false, autoScroll = true;
+        let txCount = 0, rxCount = 0;
+        let bruteForceRunning = false, bruteForceAbort = false;
 
         // ========================================================================
         // UI HELPERS
         // ========================================================================
         const $ = id => document.getElementById(id);
-        
-        function log(msg, type = 'info') {
-            const consoleEl = $('console');
+        function switchTab(name) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            $(`tab-${name}`).classList.add('active');
+        }
+
+        function logSniffer(direction, hex, note = '') {
+            const con = $('snifferConsole');
+            const ts = new Date().toLocaleTimeString('de-DE', {hour12:false});
+            const dirClass = direction === 'TX' ? 'tx' : (direction === 'RX' ? 'rx' : 'sys');
+            const dirIcon = direction === 'TX' ? '➡️' : (direction === 'RX' ? '⬅️' : '⚙️');
+            
+            // ASCII versuch
+            const bytes = hex.split(' ').map(b => parseInt(b,16)).filter(x=>!isNaN(x));
+            const ascii = bytes.map(b => (b>=32&&b<=126)?String.fromCharCode(b):'.').join('');
+            
             const entry = document.createElement('div');
-            entry.className = `entry ${type}`;
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            consoleEl.appendChild(entry);
-            consoleEl.style.display = 'block';
-            consoleEl.scrollTop = consoleEl.scrollHeight;
+            entry.className = 'entry';
+            entry.innerHTML = `<span class="ts">${ts}</span><span class="dir ${dirClass}">${dirIcon} ${direction}</span><span class="hex">${hex}</span><span class="ascii">[${ascii}]</span>${note?'<span class="note">'+note+'</span>':''}`;
+            con.appendChild(entry);
+            
+            if (direction === 'TX') { txCount++; $('statTx').textContent = txCount; }
+            if (direction === 'RX') { rxCount++; $('statRx').textContent = rxCount; }
+            $('statLast').textContent = new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+            
+            if (autoScroll) con.scrollTop = con.scrollHeight;
         }
 
-        function setStatus(text, connected) {
-            $('statusText').textContent = text;
-            const badge = $('statusBadge');
-            if (connected) {
-                badge.classList.add('connected');
-                $('connectBtn').classList.add('hidden');
-                $('controls').classList.remove('hidden');
-                $('infoGrid').style.display = 'grid';
-                $('unlockBtn').disabled = false;
-                $('resetBtn').disabled = false;
-            } else {
-                badge.classList.remove('connected');
-                $('connectBtn').classList.remove('hidden');
-                $('controls').classList.add('hidden');
-                $('infoGrid').style.display = 'none';
-                $('unlockBtn').disabled = true;
-                $('resetBtn').disabled = true;
-                $('deviceName').textContent = '-';
-            }
-        }
-
-        function setHex(hex) {
-            $('customHex').value = hex;
+        function clearLog() { $('snifferConsole').innerHTML = ''; txCount=0; rxCount=0; $('statTx').textContent='0'; $('statRx').textContent='0'; }
+        function toggleAutoScroll() { autoScroll = !autoScroll; $('btnAutoScroll').textContent = autoScroll ? '⏸️ Pause' : '▶️ Resume'; }
+        function exportLog() {
+            const entries = Array.from($('snifferConsole').children).map(e => e.textContent).join('\n');
+            const blob = new Blob([entries], {type:'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `sniffer_${Date.now()}.txt`; a.click();
         }
 
         // ========================================================================
-        // BLUETOOTH CONNECTION
+        // CONNECTION
         // ========================================================================
         async function connect() {
             try {
-                log('Suche nach Bluetooth-Geräten...', 'info');
+                if (!navigator.bluetooth) { alert('Web Bluetooth nicht verfügbar. Nutze Chrome oder Bluefy.'); return; }
                 
-                // Filter: entweder Name enthält "M0Robot" oder der Service UUID passt
+                logSniffer('SYS', '', 'Starte Scan nach M0Robot...');
                 device = await navigator.bluetooth.requestDevice({
-                    filters: [
-                        { namePrefix: 'M0Robot' },
-                        { services: [UART_SERVICE_UUID] }
-                    ],
-                    optionalServices: [UART_SERVICE_UUID]
+                    filters: [{ namePrefix: 'M0Robot' }, { services: [UART_SERVICE] }],
+                    optionalServices: [UART_SERVICE]
                 });
 
                 $('deviceName').textContent = device.name || 'Unbekannt';
-                log(`Gefunden: ${device.name}`, 'info');
-
-                device.addEventListener('gattserverdisconnected', onDisconnect);
+                logSniffer('SYS', '', `Gefunden: ${device.name}`);
                 
-                log('Verbinde mit GATT-Server...', 'info');
+                device.addEventListener('gattserverdisconnected', onDisconnect);
                 server = await device.gatt.connect();
                 
-                log('Erkenne UART-Service...', 'info');
-                const service = await server.getPrimaryService(UART_SERVICE_UUID);
+                const service = await server.getPrimaryService(UART_SERVICE);
+                rxChar = await service.getCharacteristic(UART_RX);
+                txChar = await service.getCharacteristic(UART_TX);
                 
-                log('Erkenne Charakteristiken...', 'info');
-                rxCharacteristic = await service.getCharacteristic(UART_RX_UUID);
-                txCharacteristic = await service.getCharacteristic(UART_TX_UUID);
-                
-                // Notifications für TX (Empfang) aktivieren
-                await txCharacteristic.startNotifications();
-                txCharacteristic.addEventListener('characteristicvaluechanged', handleNotification);
+                await txChar.startNotifications();
+                txChar.addEventListener('characteristicvaluechanged', e => {
+                    const val = e.target.value;
+                    const bytes = new Uint8Array(val.buffer);
+                    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(' ');
+                    logSniffer('RX', hex, 'Notification empfangen');
+                });
                 
                 isConnected = true;
-                setStatus('Verbunden', true);
-                log('✅ Verbindung hergestellt. Bereit für Befehle.', 'info');
+                updateUI();
+                logSniffer('SYS', '', '✅ Verbunden. Notifications aktiv.');
                 
-            } catch (err) {
-                log(`❌ Fehler: ${err.message}`, 'error');
+            } catch(err) {
+                logSniffer('SYS', '', `❌ Fehler: ${err.message}`);
                 console.error(err);
             }
         }
 
-        function onDisconnect(event) {
-            log('🔌 Verbindung getrennt.', 'warn');
-            isConnected = false;
-            setStatus('Nicht verbunden', false);
-            device = null;
-            server = null;
-            rxCharacteristic = null;
-            txCharacteristic = null;
+        function disconnect() {
+            if (device && device.gatt.connected) device.gatt.disconnect();
+            onDisconnect();
         }
 
-        function handleNotification(event) {
-            const value = event.target.value;
-            const bytes = new Uint8Array(value.buffer);
-            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
-            log(`⬅️ RX: ${hex}`, 'info');
+        function onDisconnect() {
+            isConnected = false; rxChar = null; txChar = null;
+            updateUI();
+            logSniffer('SYS', '', '🔌 Getrennt');
         }
 
-        // ========================================================================
-        // HEX COMMAND ENGINE
-        // ========================================================================
-        
-        /**
-         * Sendet einen Hex-Befehl an den Scooter.
-         * @param {string} hexString - Hex-Bytes als Leerzeichen-getrennter String
-         * @param {boolean} autoChecksum - Wenn true, wird XOR-Checksumme automatisch angehängt
-         */
-        async function sendHexCommand(hexString, autoChecksum = true) {
-            if (!isConnected || !rxCharacteristic) {
-                log('Nicht verbunden!', 'error');
-                return;
+        function updateUI() {
+            const badge = $('statusBadge');
+            if (isConnected) {
+                badge.className = 'badge ok';
+                $('statusText').textContent = 'Verbunden';
+                $('connectBtn').classList.add('hidden');
+                $('connectedActions').classList.remove('hidden');
+                $('btnUnlock').disabled = false;
+                $('btnReset').disabled = false;
+                $('btnCustomSpeed').disabled = false;
+                $('btnLabSend').disabled = false;
+                $('btnBruteStart').disabled = false;
+            } else {
+                badge.className = 'badge';
+                $('statusText').textContent = 'Offline';
+                $('connectBtn').classList.remove('hidden');
+                $('connectedActions').classList.add('hidden');
+                $('btnUnlock').disabled = true;
+                $('btnReset').disabled = true;
+                $('btnCustomSpeed').disabled = true;
+                $('btnLabSend').disabled = true;
+                $('btnBruteStart').disabled = true;
             }
+        }
 
+        // ========================================================================
+        // CHECKSUM & BUILDER
+        // ========================================================================
+        function calcChecksum(bytes, mode) {
+            if (mode === 'none') return [];
+            if (mode === 'xor') {
+                const xor = bytes.reduce((a,b) => a ^ b, 0);
+                return [xor];
+            }
+            if (mode === 'xor_skip') {
+                const xor = bytes.slice(2).reduce((a,b) => a ^ b, 0);
+                return [xor];
+            }
+            if (mode === 'sum') {
+                const sum = bytes.reduce((a,b) => a + b, 0) & 0xFF;
+                return [sum];
+            }
+            if (mode === 'crc8') {
+                // Simple CRC-8 für chinesische Controller (polynom 0x31, init 0x00)
+                let crc = 0;
+                for (let b of bytes) {
+                    crc ^= b;
+                    for (let i=0; i<8; i++) crc = (crc & 0x80) ? ((crc << 1) ^ 0x31) & 0xFF : (crc << 1) & 0xFF;
+                }
+                return [crc];
+            }
+            return [];
+        }
+
+        function buildCommand(payloadHex, headerMode, checksumMode) {
+            let bytes = [];
+            
+            // Header
+            if (headerMode === '55aa') {
+                const payload = parseHex(payloadHex);
+                bytes = [0x55, 0xAA, payload.length, ...payload];
+            } else if (headerMode === '5aa5') {
+                const payload = parseHex(payloadHex);
+                bytes = [0x5A, 0xA5, payload.length, ...payload];
+            } else if (headerMode === '01') {
+                // QS-S4: 01 03 00 00 00 [GEAR] 00 46 00 80 02 00 00 00
+                const p = parseHex(payloadHex);
+                bytes = [0x01, 0x03, 0x00, 0x00, 0x00, ...(p.length?p:[0x0F]), 0x00, 0x46, 0x00, 0x80, 0x02, 0x00, 0x00, 0x00];
+            } else {
+                bytes = parseHex(payloadHex);
+            }
+            
+            // Checksum
+            const cs = calcChecksum(bytes, checksumMode);
+            return [...bytes, ...cs];
+        }
+
+        function parseHex(str) {
+            return str.trim().split(/\s+/).filter(x=>x).map(b => parseInt(b,16)).filter(x=>!isNaN(x));
+        }
+
+        // ========================================================================
+        // SENDER
+        // ========================================================================
+        async function sendRaw(bytes, note='') {
+            if (!isConnected || !rxChar) { logSniffer('SYS', '', 'Nicht verbunden!'); return false; }
             try {
-                // Parse Hex-String
-                let bytes = hexString.trim().split(/\s+/).map(b => parseInt(b, 16));
+                const hex = bytes.map(b => b.toString(16).padStart(2,'0')).join(' ');
+                logSniffer('TX', hex, note);
                 
-                if (bytes.some(isNaN)) {
-                    log('Ungültiges Hex-Format!', 'error');
-                    return;
-                }
-
-                // Auto-Checksumme (XOR über alle Bytes) anhängen
-                if (autoChecksum) {
-                    const checksum = bytes.reduce((acc, val) => acc ^ val, 0);
-                    bytes.push(checksum);
-                    log(`Auto-Checksumme: 0x${checksum.toString(16).padStart(2, '0')}`, 'info');
-                }
-
-                const buffer = new Uint8Array(bytes);
-                const hexOut = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
-                
-                log(`➡️ TX: ${hexOut}`, 'info');
-                
-                // Write without response bevorzugen, falls unterstützt
-                if (rxCharacteristic.properties.writeWithoutResponse) {
-                    await rxCharacteristic.writeValueWithoutResponse(buffer);
+                const buf = new Uint8Array(bytes);
+                if (rxChar.properties.writeWithoutResponse) {
+                    await rxChar.writeValueWithoutResponse(buf);
                 } else {
-                    await rxCharacteristic.writeValueWithResponse(buffer);
+                    await rxChar.writeValueWithResponse(buf);
                 }
-                
-                log('Befehl gesendet.', 'info');
-                
-            } catch (err) {
-                log(`Sendefehler: ${err.message}`, 'error');
+                return true;
+            } catch(err) {
+                logSniffer('SYS', '', `Sendefehler: ${err.message}`);
+                return false;
             }
         }
 
-        // ========================================================================
-        // SPEEDLIMIT BEFEHLE (Platzhalter – anpassbar!)
-        // ========================================================================
-        /*
-         * HINWEIS: Die exakten Befehle für den M0Robot/Zamelux sind proprietär.
-         * Unten sind typische Protokoll-Formate für chinesische Scooter-Controller.
-         * Passe die Werte an, wenn du das korrekte Protokoll durch Sniffen ermittelst.
-         */
+        async function quickSend(hexString) {
+            const bytes = parseHex(hexString);
+            await sendRaw(bytes, 'Quick-Test');
+        }
 
+        // ========================================================================
+        // TUNER ACTIONS
+        // ========================================================================
         async function sendUnlock() {
-            log('🔓 Sende Speedlimit-Unlock...', 'warn');
+            logSniffer('SYS', '', '🔓 Sende Unlock-Befehle...');
             
-            // Variante A: Typisches 15-Byte LCD->ESC Protokoll (QS-S4 Style)
-            // Byte 0: Header (0x01), Byte 1: Länge (0x03), Byte 5: Gear/Mode
-            // Hier: Gear-Wert auf 0x0F (Sport/Unlock) setzen
-            await sendHexCommand('01 03 00 00 00 0F 00 46 00 80 02 00 00 00', true);
+            // Variante 1: QS-S4 Gear 3 (0x0F)
+            await sendRaw(buildCommand('0F', '01', 'xor'), 'Unlock QS-S4 Gear3');
+            await sleep(300);
             
-            // Variante B: Alternativer Header (manchmal bei M0Robot-Klons)
-            setTimeout(async () => {
-                await sendHexCommand('55 AA 03 1E 00 00 00 00 00 00 00 00 00', true);
-            }, 200);
+            // Variante 2: M0Robot-Style mit 0x1B Command
+            await sendRaw(buildCommand('1B 0F 00 00 00 00 00 00 00', '55aa', 'xor'), 'Unlock M0Robot 0x1B');
+            await sleep(300);
             
-            log('Speedlimit-Befehl gesendet. Scooter neu starten, falls nötig.', 'warn');
+            // Variante 3: Direkter Speed-Wert 25 km/h
+            await sendRaw(buildCommand('1B 19 00 00 00 00 00 00 00', '55aa', 'xor'), 'Unlock Speed 25km/h');
+            
+            logSniffer('SYS', '', 'Unlock gesendet. Scooter neu starten, falls nötig.');
         }
 
         async function sendReset() {
-            log('🔒 Sende Speedlimit-Reset auf 20 km/h...', 'info');
+            logSniffer('SYS', '', '🔒 Sende Reset auf 20 km/h...');
             
-            // Variante A: Standard-Gear (0x05 = Gear 1 / Eco / 20km/h)
-            await sendHexCommand('01 03 00 00 00 05 00 46 00 80 02 00 00 00', true);
+            await sendRaw(buildCommand('05', '01', 'xor'), 'Reset QS-S4 Gear1');
+            await sleep(300);
+            await sendRaw(buildCommand('1B 05 00 00 00 00 00 00 00', '55aa', 'xor'), 'Reset M0Robot 0x1B');
+            await sleep(300);
+            await sendRaw(buildCommand('1B 14 00 00 00 00 00 00 00', '55aa', 'xor'), 'Reset Speed 20km/h');
             
-            // Variante B: Reset-Frame
-            setTimeout(async () => {
-                await sendHexCommand('55 AA 03 1E 00 00 00 00 00 00 00 00 00', true);
-            }, 200);
-            
-            log('Zurücksetzen abgeschlossen.', 'info');
+            logSniffer('SYS', '', 'Reset abgeschlossen.');
         }
 
-        async function sendCustomHex() {
-            const hex = $('customHex').value;
-            if (!hex.trim()) {
-                log('Bitte Hex-Werte eingeben!', 'warn');
-                return;
-            }
-            await sendHexCommand(hex, true);
+        async function sendCustomSpeed() {
+            const speed = parseInt($('customSpeed').value) || 20;
+            const hexVal = speed.toString(16).padStart(2,'0');
+            logSniffer('SYS', '', `Setze Speed auf ${speed} km/h (0x${hexVal})...`);
+            
+            await sendRaw(buildCommand('1B ' + hexVal + ' 00 00 00 00 00 00 00', '55aa', 'xor'), `Custom Speed ${speed}`);
+            await sleep(200);
+            await sendRaw(buildCommand(hexVal, '01', 'xor'), `Custom Gear ${speed}`);
         }
+
+        async function sendPing() {
+            // Ein harmloser Befehl, um zu testen ob der Controller überhaupt antwortet
+            logSniffer('SYS', '', '📡 Sende Ping-Test...');
+            await sendRaw(buildCommand('00 00 00 00 00 00 00 00 00', '55aa', 'xor'), 'Ping Test');
+        }
+
+        // ========================================================================
+        // COMMAND LAB
+        // ========================================================================
+        function loadTemplate(type) {
+            if (type === 'm0robot') {
+                $('headerMode').value = '55aa';
+                $('checksumMode').value = 'xor';
+                $('payloadHex').value = '1B 0F 00 00 00 00 00 00 00';
+            } else if (type === 'qss4') {
+                $('headerMode').value = '01';
+                $('checksumMode').value = 'xor';
+                $('payloadHex').value = '0F';
+            } else if (type === 'ninebot') {
+                $('headerMode').value = '5aa5';
+                $('checksumMode').value = 'sum';
+                $('payloadHex').value = '3E 00 00 00 00 00 00 00 00 00 00';
+            } else if (type === 'kugoo') {
+                $('headerMode').value = 'none';
+                $('checksumMode').value = 'xor';
+                $('rawHex').value = 'A5 5A 01 00 00 00 00 00 00 00 00 00 00';
+            }
+        }
+
+        async function sendFromLab() {
+            const raw = $('rawHex').value.trim();
+            const payload = $('payloadHex').value.trim();
+            const header = $('headerMode').value;
+            const cs = $('checksumMode').value;
+            
+            let bytes;
+            if (raw) {
+                bytes = parseHex(raw);
+                if (cs !== 'none') {
+                    const c = calcChecksum(bytes, cs);
+                    bytes = [...bytes, ...c];
+                }
+            } else {
+                bytes = buildCommand(payload, header, cs);
+            }
+            
+            await sendRaw(bytes, 'Lab-Command');
+            $('rawHex').value = '';
+        }
+
+        // ========================================================================
+        // BRUTE FORCE
+        // ========================================================================
+        async function startBruteForce() {
+            if (bruteForceRunning) return;
+            bruteForceRunning = true; bruteForceAbort = false;
+            $('btnBruteStart').classList.add('hidden');
+            $('btnBruteStop').classList.remove('hidden');
+            
+            const header = parseHex($('bfHeader').value || '55 AA 03');
+            const cmdStart = parseInt($('bfCmdStart').value || '10', 16);
+            const valStart = parseInt($('bfValStart').value || '00', 16);
+            const range = parseInt($('bfRange').value || 50);
+            const delay = parseInt($('bfDelay').value || 800);
+            
+            logSniffer('SYS', '', `🎯 Brute Force gestartet: CMD 0x${cmdStart.toString(16)}..0x${(cmdStart+range).toString(16)}, Wert 0x${valStart.toString(16)}..0x${(valStart+range).toString(16)}`);
+            
+            let total = range * range;
+            let current = 0;
+            
+            outer: for (let c = cmdStart; c < cmdStart + range; c++) {
+                for (let v = valStart; v < valStart + range; v++) {
+                    if (bruteForceAbort) { logSniffer('SYS', '', '🛑 Abgebrochen.'); break outer; }
+                    
+                    const payload = [c, v, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+                    const bytes = [...header, ...payload];
+                    const cs = calcChecksum(bytes, 'xor');
+                    const full = [...bytes, ...cs];
+                    
+                    await sendRaw(full, `Brute CMD=0x${c.toString(16).padStart(2,'0')} VAL=0x${v.toString(16).padStart(2,'0')}`);
+                    
+                    current++;
+                    const pct = (current / total) * 100;
+                    $('bruteProgress').style.width = pct + '%';
+                    $('bruteStatus').textContent = `Teste ${current}/${total} (CMD 0x${c.toString(16)} VAL 0x${v.toString(16)})`;
+                    
+                    await sleep(delay);
+                }
+            }
+            
+            bruteForceRunning = false;
+            $('btnBruteStart').classList.remove('hidden');
+            $('btnBruteStop').classList.add('hidden');
+            $('bruteProgress').style.width = '0%';
+            $('bruteStatus').textContent = 'Fertig';
+            logSniffer('SYS', '', '🎯 Brute Force abgeschlossen.');
+        }
+
+        function stopBruteForce() { bruteForceAbort = true; }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
         // ========================================================================
         // INIT
         // ========================================================================
-        log('Bereit. Klicke "Mit Scooter verbinden".', 'info');
-        
-        // Prüfe ob Web Bluetooth unterstützt wird
         if (!navigator.bluetooth) {
-            log('Web Bluetooth API nicht verfügbar! Nutze Chrome oder Bluefy auf iOS.', 'error');
-            $('connectBtn').disabled = true;
+            logSniffer('SYS', '', '⚠️ Web Bluetooth nicht verfügbar. Chrome oder Bluefy (iOS) benötigt.');
+        } else {
+            logSniffer('SYS', '', 'Bereit. Verbinde mit M0Robot.');
         }
     </script>
 </body>
