@@ -17,6 +17,7 @@
             --warning: #f59e0b;
             --info: #3b82f6;
             --border: #1e293b;
+            --success: #22c55e;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,7 +44,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 0.5rem;
@@ -76,7 +76,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Status */
         .status-row {
             display: flex;
             justify-content: space-between;
@@ -100,6 +99,7 @@
         .badge.ok { background: rgba(16,185,129,0.12); color: var(--accent); border-color: rgba(16,185,129,0.3); }
         .badge.warn { background: rgba(245,158,11,0.12); color: var(--warning); border-color: rgba(245,158,11,0.3); }
         .badge.err { background: rgba(239,68,68,0.12); color: var(--danger); border-color: rgba(239,68,68,0.3); }
+        .badge.success { background: rgba(34,197,94,0.12); color: var(--success); border-color: rgba(34,197,94,0.3); }
         .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
         .btn {
@@ -126,6 +126,8 @@
         .btn-secondary:hover:not(:disabled) { background: #334155; }
         .btn-info { background: var(--info); color: white; }
         .btn-info:hover:not(:disabled) { background: #2563eb; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover:not(:disabled) { background: #16a34a; }
 
         .btn-row { display: flex; gap: 0.75rem; }
         .btn-row .btn { flex: 1; margin-bottom: 0; }
@@ -141,7 +143,6 @@
         }
         .safety strong { display: block; margin-bottom: 0.2rem; }
 
-        /* Console / Sniffer */
         .console {
             background: #020617;
             border: 1px solid var(--border);
@@ -160,6 +161,7 @@
         .entry .dir.tx { color: var(--accent); }
         .entry .dir.rx { color: var(--info); }
         .entry .dir.sys { color: var(--muted); }
+        .entry .dir.hit { color: var(--success); }
         .entry .hex { color: #e2e8f0; word-break: break-all; }
         .entry .ascii { color: #64748b; margin-left: 0.5rem; }
         .entry .note { color: var(--warning); margin-left: 0.5rem; font-style: italic; }
@@ -183,7 +185,6 @@
         .small-btn:hover { background: #334155; }
         .small-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* Inputs */
         .field { margin-bottom: 0.875rem; }
         .field label {
             display: block;
@@ -239,6 +240,7 @@
             font-size: 0.75rem;
             color: var(--muted);
             margin-bottom: 0.75rem;
+            flex-wrap: wrap;
         }
         .stats span { display: flex; align-items: center; gap: 0.3rem; }
 
@@ -255,12 +257,11 @@
         }
         .hint strong { color: #60a5fa; }
 
-        /* Brute force progress */
         .progress-bar {
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: #1e293b;
-            border-radius: 3px;
+            border-radius: 4px;
             overflow: hidden;
             margin-top: 0.5rem;
         }
@@ -270,13 +271,56 @@
             width: 0%;
             transition: width 0.3s;
         }
+
+        .hit-box {
+            background: rgba(34,197,94,0.1);
+            border: 2px solid var(--success);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { border-color: var(--success); }
+            50% { border-color: #86efac; }
+        }
+        .hit-box h3 { color: var(--success); font-size: 1rem; margin-bottom: 0.5rem; }
+        .hit-box .hex-display {
+            font-family: monospace;
+            font-size: 1.1rem;
+            background: #020617;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            word-break: break-all;
+        }
+
+        .detection-options {
+            background: #0f172a;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .detection-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .detection-options input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🛴 Zamelux E9-2 Protokoll-Tuner</h1>
-            <p>Sniffer • Command Lab • Brute Force</p>
+            <p>Sniffer • Command Lab • Auto-Brute Force</p>
         </header>
 
         <div class="safety">
@@ -308,12 +352,23 @@
             </div>
         </div>
 
+        <!-- HIT NOTIFICATION -->
+        <div id="hitNotification" class="hit-box hidden">
+            <h3>🎯 TREFFER ERKANNT!</h3>
+            <p style="font-size: 0.85rem; margin-bottom: 0.5rem;">Der Scooter hat auf diesen Befehl reagiert:</p>
+            <div class="hex-display" id="hitHex">-</div>
+            <p style="font-size: 0.8rem; color: var(--muted);">CMD: <b id="hitCmd">-</b> | Wert: <b id="hitVal">-</b></p>
+            <button class="btn btn-success" onclick="useHitCommand()" style="margin-top: 0.75rem; margin-bottom: 0;">
+                <span>✅</span> Diesen Befehl als Unlock speichern
+            </button>
+        </div>
+
         <!-- Tabs -->
         <div class="tabs">
             <div class="tab active" onclick="switchTab('tuner')">🔧 Tuner</div>
             <div class="tab" onclick="switchTab('sniffer')">👁️ Sniffer</div>
             <div class="tab" onclick="switchTab('lab')">🧪 Command Lab</div>
-            <div class="tab" onclick="switchTab('brute')">🎯 Brute Force</div>
+            <div class="tab" onclick="switchTab('brute')">🎯 Auto-Brute</div>
         </div>
 
         <!-- TAB: TUNER -->
@@ -345,7 +400,7 @@
             </div>
 
             <div class="card">
-                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--muted); text-transform: uppercase;">Schnell-Test Befehle</h3>
+                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted); text-transform: uppercase;">Schnell-Test Befehle</h3>
                 <div class="template-grid">
                     <button class="template-btn" onclick="quickSend('55 AA 03 1B 00 00 00 00 00 00 00 00 00')">
                         55 AA 03 1B...
@@ -373,11 +428,12 @@
                 <div class="stats">
                     <span>📤 TX: <b id="statTx">0</b></span>
                     <span>📥 RX: <b id="statRx">0</b></span>
+                    <span>🎯 Hits: <b id="statHits">0</b></span>
                     <span>⏱️ Letzte: <b id="statLast">-</b></span>
                 </div>
                 <div class="toolbar">
                     <button class="small-btn" onclick="clearLog()">🗑️ Clear</button>
-                    <button class="small-btn" onclick="exportLog()">💾 Export CSV</button>
+                    <button class="small-btn" onclick="exportLog()">💾 Export</button>
                     <button class="small-btn" onclick="toggleAutoScroll()" id="btnAutoScroll">⏸️ Pause</button>
                 </div>
                 <div class="console" id="snifferConsole"></div>
@@ -444,13 +500,20 @@
             </div>
         </div>
 
-        <!-- TAB: BRUTE FORCE -->
+        <!-- TAB: AUTO-BRUTE -->
         <div id="tab-brute" class="tab-content">
             <div class="card">
-                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase;">Systematischer Brute Force</h3>
+                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase;">🎯 Automatische Erkennung</h3>
                 
                 <div class="hint">
-                    <strong>So funktioniert's:</strong> Die App sendet Befehle mit inkrementierenden Werten und wartet jeweils auf eine Antwort oder Reaktion (Piepton, Display). Halte den Scooter bereit!
+                    <strong>So funktioniert's:</strong> Die App sendet Befehle und erkennt automatisch, wenn der Scooter reagiert (z.B. durch eine RX-Antwort, die nicht nur ein ACK ist). Du musst nur zuhören, ob der Motor piept oder das Display flackert!
+                </div>
+
+                <div class="detection-options">
+                    <label><input type="checkbox" id="detectRx" checked> 🔔 RX-Antwort erkennen (Controller antwortet mit Daten)</label>
+                    <label><input type="checkbox" id="detectLength"> 📏 Ungewöhnliche Antwort-Länge (nicht Standard-ACK)</label>
+                    <label><input type="checkbox" id="detectPattern"> 🔍 Bekanntes Muster in Antwort (z.B. Status-Byte ändert sich)</label>
+                    <label><input type="checkbox" id="detectSilence"> 🤫 Plötzliche Stille nach Befehl (keine ACK = möglicher Treffer)</label>
                 </div>
 
                 <div class="grid-2">
@@ -474,11 +537,11 @@
 
                 <div class="field">
                     <label>Delay zwischen Befehlen (ms)</label>
-                    <input type="number" id="bfDelay" value="800" min="200" max="5000">
+                    <input type="number" id="bfDelay" value="1000" min="500" max="5000">
                 </div>
 
                 <button class="btn btn-danger" onclick="startBruteForce()" id="btnBruteStart" disabled>
-                    <span>🎯</span> Brute Force starten
+                    <span>🎯</span> Auto-Brute Force starten
                 </button>
                 <button class="btn btn-secondary hidden" onclick="stopBruteForce()" id="btnBruteStop">
                     <span>🛑</span> Stoppen
@@ -486,6 +549,11 @@
 
                 <div class="progress-bar"><div class="progress-fill" id="bruteProgress"></div></div>
                 <div style="text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem;" id="bruteStatus">Bereit</div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted);">Gespeicherte Treffer</h3>
+                <div id="savedHits" style="font-size: 0.8rem; color: var(--muted);">Noch keine Treffer gespeichert.</div>
             </div>
         </div>
 
@@ -497,7 +565,7 @@
 
     <script>
         // ========================================================================
-        // UUIDs (aus deinem Screenshot)
+        // UUIDs
         // ========================================================================
         const UART_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
         const UART_RX      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
@@ -508,11 +576,14 @@
         // ========================================================================
         let device = null, server = null, rxChar = null, txChar = null;
         let isConnected = false, autoScroll = true;
-        let txCount = 0, rxCount = 0;
+        let txCount = 0, rxCount = 0, hitCount = 0;
         let bruteForceRunning = false, bruteForceAbort = false;
+        let lastRxTime = 0, lastRxData = '';
+        let savedHitCommand = null; // Der Befehl, der als Treffer erkannt wurde
+        let hitLog = []; // Alle Treffer speichern
 
         // ========================================================================
-        // UI HELPERS
+        // UI
         // ========================================================================
         const $ = id => document.getElementById(id);
         function switchTab(name) {
@@ -525,11 +596,10 @@
         function logSniffer(direction, hex, note = '') {
             const con = $('snifferConsole');
             const ts = new Date().toLocaleTimeString('de-DE', {hour12:false});
-            const dirClass = direction === 'TX' ? 'tx' : (direction === 'RX' ? 'rx' : 'sys');
-            const dirIcon = direction === 'TX' ? '➡️' : (direction === 'RX' ? '⬅️' : '⚙️');
+            const dirClass = direction === 'TX' ? 'tx' : (direction === 'RX' ? 'rx' : (direction === 'HIT' ? 'hit' : 'sys'));
+            const dirIcon = direction === 'TX' ? '➡️' : (direction === 'RX' ? '⬅️' : (direction === 'HIT' ? '🎯' : '⚙️'));
             
-            // ASCII versuch
-            const bytes = hex.split(' ').map(b => parseInt(b,16)).filter(x=>!isNaN(x));
+            const bytes = hex.split(' ').filter(x=>x).map(b => parseInt(b,16)).filter(x=>!isNaN(x));
             const ascii = bytes.map(b => (b>=32&&b<=126)?String.fromCharCode(b):'.').join('');
             
             const entry = document.createElement('div');
@@ -538,17 +608,18 @@
             con.appendChild(entry);
             
             if (direction === 'TX') { txCount++; $('statTx').textContent = txCount; }
-            if (direction === 'RX') { rxCount++; $('statRx').textContent = rxCount; }
+            if (direction === 'RX') { rxCount++; $('statRx').textContent = rxCount; lastRxTime = Date.now(); lastRxData = hex; }
+            if (direction === 'HIT') { hitCount++; $('statHits').textContent = hitCount; }
             $('statLast').textContent = new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
             
             if (autoScroll) con.scrollTop = con.scrollHeight;
         }
 
-        function clearLog() { $('snifferConsole').innerHTML = ''; txCount=0; rxCount=0; $('statTx').textContent='0'; $('statRx').textContent='0'; }
+        function clearLog() { $('snifferConsole').innerHTML = ''; txCount=0; rxCount=0; hitCount=0; $('statTx').textContent='0'; $('statRx').textContent='0'; $('statHits').textContent='0'; }
         function toggleAutoScroll() { autoScroll = !autoScroll; $('btnAutoScroll').textContent = autoScroll ? '⏸️ Pause' : '▶️ Resume'; }
         function exportLog() {
             const entries = Array.from($('snifferConsole').children).map(e => e.textContent).join('\n');
-            const blob = new Blob([entries], {type:'text/csv'});
+            const blob = new Blob([entries], {type:'text/plain'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url; a.download = `sniffer_${Date.now()}.txt`; a.click();
@@ -578,12 +649,7 @@
                 txChar = await service.getCharacteristic(UART_TX);
                 
                 await txChar.startNotifications();
-                txChar.addEventListener('characteristicvaluechanged', e => {
-                    const val = e.target.value;
-                    const bytes = new Uint8Array(val.buffer);
-                    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(' ');
-                    logSniffer('RX', hex, 'Notification empfangen');
-                });
+                txChar.addEventListener('characteristicvaluechanged', handleNotification);
                 
                 isConnected = true;
                 updateUI();
@@ -591,7 +657,6 @@
                 
             } catch(err) {
                 logSniffer('SYS', '', `❌ Fehler: ${err.message}`);
-                console.error(err);
             }
         }
 
@@ -604,6 +669,18 @@
             isConnected = false; rxChar = null; txChar = null;
             updateUI();
             logSniffer('SYS', '', '🔌 Getrennt');
+        }
+
+        function handleNotification(event) {
+            const val = event.target.value;
+            const bytes = new Uint8Array(val.buffer);
+            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(' ');
+            logSniffer('RX', hex, 'Notification');
+            
+            // Auto-Detection: Während Brute Force läuft, prüfe ob das eine "interessante" Antwort ist
+            if (bruteForceRunning) {
+                checkForHit(hex, bytes);
+            }
         }
 
         function updateUI() {
@@ -632,6 +709,104 @@
         }
 
         // ========================================================================
+        // AUTO-HIT DETECTION
+        // ========================================================================
+        let lastSentCommand = null;
+        let lastSentTime = 0;
+        let silenceTimer = null;
+
+        function checkForHit(rxHex, rxBytes) {
+            const detectRx = $('detectRx').checked;
+            const detectLength = $('detectLength').checked;
+            const detectPattern = $('detectPattern').checked;
+            const detectSilence = $('detectSilence').checked;
+            
+            let isHit = false;
+            let reason = '';
+
+            // 1. RX-Antwort erkannt (wenn der Controller mit mehr als 0 Bytes antwortet)
+            if (detectRx && rxBytes.length > 0) {
+                // Prüfe ob es ein "echter" Status ist und nicht nur ein leeres ACK
+                if (rxBytes.length > 3) {
+                    isHit = true;
+                    reason = `RX-Antwort mit ${rxBytes.length} Bytes`;
+                }
+            }
+
+            // 2. Ungewöhnliche Länge
+            if (detectLength && rxBytes.length > 0) {
+                // Typische ACKs sind 1-3 Bytes. Alles darüber ist interessant.
+                if (rxBytes.length >= 5) {
+                    isHit = true;
+                    reason = `Ungewöhnliche Antwort-Länge: ${rxBytes.length}`;
+                }
+            }
+
+            // 3. Muster-Erkennung (Status-Byte ändert sich)
+            if (detectPattern && lastRxData) {
+                const lastBytes = lastRxData.split(' ').filter(x=>x).map(b=>parseInt(b,16));
+                if (lastBytes.length === rxBytes.length && lastBytes.length > 3) {
+                    // Vergleiche Byte für Byte - wenn sich mehr als 2 unterscheiden, ist es ein Status-Update
+                    let diffs = 0;
+                    for (let i=0; i<Math.min(lastBytes.length, rxBytes.length); i++) {
+                        if (lastBytes[i] !== rxBytes[i]) diffs++;
+                    }
+                    if (diffs >= 2) {
+                        isHit = true;
+                        reason = `Status-Muster geändert (${diffs} Bytes unterschiedlich)`;
+                    }
+                }
+            }
+
+            if (isHit && lastSentCommand) {
+                showHit(lastSentCommand, reason);
+            }
+        }
+
+        function showHit(cmd, reason) {
+            const hex = cmd.bytes.map(b => b.toString(16).padStart(2,'0')).join(' ');
+            savedHitCommand = cmd;
+            
+            logSniffer('HIT', hex, `TREFFER! ${reason}`);
+            
+            $('hitHex').textContent = hex;
+            $('hitCmd').textContent = `0x${cmd.cmd.toString(16).padStart(2,'0').toUpperCase()}`;
+            $('hitVal').textContent = `0x${cmd.val.toString(16).padStart(2,'0').toUpperCase()}`;
+            $('hitNotification').classList.remove('hidden');
+            
+            // Speichere Treffer
+            hitLog.push({...cmd, reason, time: new Date().toISOString()});
+            updateSavedHits();
+            
+            // Vibration wenn möglich
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        }
+
+        function updateSavedHits() {
+            const container = $('savedHits');
+            if (hitLog.length === 0) {
+                container.innerHTML = 'Noch keine Treffer gespeichert.';
+                return;
+            }
+            container.innerHTML = hitLog.map((h, i) => 
+                `<div style="margin-bottom:0.5rem; padding:0.5rem; background:#0f172a; border-radius:0.5rem;">
+                    <b>#${i+1}</b> CMD 0x${h.cmd.toString(16).padStart(2,'0').toUpperCase()} 
+                    VAL 0x${h.val.toString(16).padStart(2,'0').toUpperCase()} 
+                    <span style="color:var(--success)">${h.reason}</span>
+                </div>`
+            ).join('');
+        }
+
+        function useHitCommand() {
+            if (!savedHitCommand) return;
+            // Speichere als "Unlock" Befehl
+            localStorage.setItem('zamelux_unlock_cmd', JSON.stringify(savedHitCommand));
+            logSniffer('SYS', '', '✅ Treffer als Unlock-Befehl gespeichert!');
+            $('hitNotification').classList.add('hidden');
+            alert('Befehl gespeichert! Wechsle zum Tuner-Tab und teste "Unlock".');
+        }
+
+        // ========================================================================
         // CHECKSUM & BUILDER
         // ========================================================================
         function calcChecksum(bytes, mode) {
@@ -649,7 +824,6 @@
                 return [sum];
             }
             if (mode === 'crc8') {
-                // Simple CRC-8 für chinesische Controller (polynom 0x31, init 0x00)
                 let crc = 0;
                 for (let b of bytes) {
                     crc ^= b;
@@ -662,8 +836,6 @@
 
         function buildCommand(payloadHex, headerMode, checksumMode) {
             let bytes = [];
-            
-            // Header
             if (headerMode === '55aa') {
                 const payload = parseHex(payloadHex);
                 bytes = [0x55, 0xAA, payload.length, ...payload];
@@ -671,14 +843,11 @@
                 const payload = parseHex(payloadHex);
                 bytes = [0x5A, 0xA5, payload.length, ...payload];
             } else if (headerMode === '01') {
-                // QS-S4: 01 03 00 00 00 [GEAR] 00 46 00 80 02 00 00 00
                 const p = parseHex(payloadHex);
                 bytes = [0x01, 0x03, 0x00, 0x00, 0x00, ...(p.length?p:[0x0F]), 0x00, 0x46, 0x00, 0x80, 0x02, 0x00, 0x00, 0x00];
             } else {
                 bytes = parseHex(payloadHex);
             }
-            
-            // Checksum
             const cs = calcChecksum(bytes, checksumMode);
             return [...bytes, ...cs];
         }
@@ -711,6 +880,8 @@
 
         async function quickSend(hexString) {
             const bytes = parseHex(hexString);
+            lastSentCommand = { bytes, cmd: bytes[3]||0, val: bytes[4]||0, raw: hexString };
+            lastSentTime = Date.now();
             await sendRaw(bytes, 'Quick-Test');
         }
 
@@ -718,31 +889,30 @@
         // TUNER ACTIONS
         // ========================================================================
         async function sendUnlock() {
-            logSniffer('SYS', '', '🔓 Sende Unlock-Befehle...');
+            const saved = localStorage.getItem('zamelux_unlock_cmd');
+            if (saved) {
+                const cmd = JSON.parse(saved);
+                logSniffer('SYS', '', '🔓 Sende gespeicherten Unlock-Befehl...');
+                await sendRaw(cmd.bytes, 'Saved Unlock');
+                return;
+            }
             
-            // Variante 1: QS-S4 Gear 3 (0x0F)
+            logSniffer('SYS', '', '🔓 Sende Unlock-Befehle...');
             await sendRaw(buildCommand('0F', '01', 'xor'), 'Unlock QS-S4 Gear3');
             await sleep(300);
-            
-            // Variante 2: M0Robot-Style mit 0x1B Command
             await sendRaw(buildCommand('1B 0F 00 00 00 00 00 00 00', '55aa', 'xor'), 'Unlock M0Robot 0x1B');
             await sleep(300);
-            
-            // Variante 3: Direkter Speed-Wert 25 km/h
             await sendRaw(buildCommand('1B 19 00 00 00 00 00 00 00', '55aa', 'xor'), 'Unlock Speed 25km/h');
-            
             logSniffer('SYS', '', 'Unlock gesendet. Scooter neu starten, falls nötig.');
         }
 
         async function sendReset() {
             logSniffer('SYS', '', '🔒 Sende Reset auf 20 km/h...');
-            
             await sendRaw(buildCommand('05', '01', 'xor'), 'Reset QS-S4 Gear1');
             await sleep(300);
             await sendRaw(buildCommand('1B 05 00 00 00 00 00 00 00', '55aa', 'xor'), 'Reset M0Robot 0x1B');
             await sleep(300);
             await sendRaw(buildCommand('1B 14 00 00 00 00 00 00 00', '55aa', 'xor'), 'Reset Speed 20km/h');
-            
             logSniffer('SYS', '', 'Reset abgeschlossen.');
         }
 
@@ -750,14 +920,12 @@
             const speed = parseInt($('customSpeed').value) || 20;
             const hexVal = speed.toString(16).padStart(2,'0');
             logSniffer('SYS', '', `Setze Speed auf ${speed} km/h (0x${hexVal})...`);
-            
             await sendRaw(buildCommand('1B ' + hexVal + ' 00 00 00 00 00 00 00', '55aa', 'xor'), `Custom Speed ${speed}`);
             await sleep(200);
             await sendRaw(buildCommand(hexVal, '01', 'xor'), `Custom Gear ${speed}`);
         }
 
         async function sendPing() {
-            // Ein harmloser Befehl, um zu testen ob der Controller überhaupt antwortet
             logSniffer('SYS', '', '📡 Sende Ping-Test...');
             await sendRaw(buildCommand('00 00 00 00 00 00 00 00 00', '55aa', 'xor'), 'Ping Test');
         }
@@ -802,32 +970,35 @@
                 bytes = buildCommand(payload, header, cs);
             }
             
+            lastSentCommand = { bytes, cmd: bytes[3]||0, val: bytes[4]||0, raw: bytes.map(b=>b.toString(16).padStart(2,'0')).join(' ') };
+            lastSentTime = Date.now();
             await sendRaw(bytes, 'Lab-Command');
             $('rawHex').value = '';
         }
 
         // ========================================================================
-        // BRUTE FORCE
+        // AUTO-BRUTE FORCE
         // ========================================================================
         async function startBruteForce() {
             if (bruteForceRunning) return;
             bruteForceRunning = true; bruteForceAbort = false;
             $('btnBruteStart').classList.add('hidden');
             $('btnBruteStop').classList.remove('hidden');
+            $('hitNotification').classList.add('hidden');
             
             const header = parseHex($('bfHeader').value || '55 AA 03');
             const cmdStart = parseInt($('bfCmdStart').value || '10', 16);
             const valStart = parseInt($('bfValStart').value || '00', 16);
             const range = parseInt($('bfRange').value || 50);
-            const delay = parseInt($('bfDelay').value || 800);
+            const delay = parseInt($('bfDelay').value || 1000);
             
-            logSniffer('SYS', '', `🎯 Brute Force gestartet: CMD 0x${cmdStart.toString(16)}..0x${(cmdStart+range).toString(16)}, Wert 0x${valStart.toString(16)}..0x${(valStart+range).toString(16)}`);
+            logSniffer('SYS', '', `🎯 Auto-Brute Force: CMD 0x${cmdStart.toString(16)}..0x${(cmdStart+range).toString(16)}, Wert 0x${valStart.toString(16)}..0x${(valStart+range).toString(16)}`);
             
             let total = range * range;
             let current = 0;
             
-            outer: for (let c = cmdStart; c < cmdStart + range; c++) {
-                for (let v = valStart; v < valStart + range; v++) {
+            outer: for (let c = cmdStart; c < cmdStart + range && c <= 0xFF; c++) {
+                for (let v = valStart; v < valStart + range && v <= 0xFF; v++) {
                     if (bruteForceAbort) { logSniffer('SYS', '', '🛑 Abgebrochen.'); break outer; }
                     
                     const payload = [c, v, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
@@ -835,12 +1006,27 @@
                     const cs = calcChecksum(bytes, 'xor');
                     const full = [...bytes, ...cs];
                     
+                    lastSentCommand = { bytes: full, cmd: c, val: v, raw: full.map(b=>b.toString(16).padStart(2,'0')).join(' ') };
+                    lastSentTime = Date.now();
+                    
                     await sendRaw(full, `Brute CMD=0x${c.toString(16).padStart(2,'0')} VAL=0x${v.toString(16).padStart(2,'0')}`);
                     
+                    // Warte auf Antwort (kurz)
+                    await sleep(200);
+                    
+                    // Prüfe auf Stille (wenn detectSilence aktiviert)
+                    if ($('detectSilence').checked) {
+                        const timeSinceRx = Date.now() - lastRxTime;
+                        if (timeSinceRx > 500 && lastSentTime > 0) {
+                            // Keine Antwort nach 500ms - könnte ein Treffer sein (Controller hat was gemacht statt zu antworten)
+                            logSniffer('SYS', '', `🤫 Stille nach CMD 0x${c.toString(16)} VAL 0x${v.toString(16)} - möglicher Treffer!`);
+                        }
+                    }
+                    
                     current++;
-                    const pct = (current / total) * 100;
+                    const pct = Math.min((current / total) * 100, 100);
                     $('bruteProgress').style.width = pct + '%';
-                    $('bruteStatus').textContent = `Teste ${current}/${total} (CMD 0x${c.toString(16)} VAL 0x${v.toString(16)})`;
+                    $('bruteStatus').textContent = `Teste ${current}/${total} (CMD 0x${c.toString(16).padStart(2,'0').toUpperCase()} VAL 0x${v.toString(16).padStart(2,'0').toUpperCase()})`;
                     
                     await sleep(delay);
                 }
@@ -865,6 +1051,13 @@
             logSniffer('SYS', '', '⚠️ Web Bluetooth nicht verfügbar. Chrome oder Bluefy (iOS) benötigt.');
         } else {
             logSniffer('SYS', '', 'Bereit. Verbinde mit M0Robot.');
+        }
+        
+        // Lade gespeicherte Treffer
+        const saved = localStorage.getItem('zamelux_unlock_cmd');
+        if (saved) {
+            const cmd = JSON.parse(saved);
+            logSniffer('SYS', '', `📦 Gespeicherter Unlock-Befehl gefunden: CMD 0x${cmd.cmd.toString(16)} VAL 0x${cmd.val.toString(16)}`);
         }
     </script>
 </body>
