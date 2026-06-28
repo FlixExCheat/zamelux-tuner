@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zamelux Green E9-2 Tuner</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        header p {
+            color: var(--muted);
+            font-size: 0.875rem;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: #334155;
+            color: var(--muted);
+        }
+
+        .status-badge.connected {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            margin-top: 0.75rem;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: var(--danger-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: var(--text);
+            margin-top: 0.75rem;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #475569;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .info-item {
+            background: #334155;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .info-item .label {
+            color: var(--muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-item .value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .console {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+            color: #4ade80;
+        }
+
+        .console .entry {
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+
+        .console .entry.error {
+            color: #f87171;
+        }
+
+        .console .entry.warn {
+            color: #fbbf24;
+        }
+
+        .console .entry.info {
+            color: #60a5fa;
+        }
+
+        .safety-notice {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #fbbf24;
+        }
+
+        .safety-notice strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .command-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #334155;
+        }
+
+        .command-section h3 {
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hex-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .hex-input {
+            flex: 1;
+            background: #020617;
+            border: 1px solid #334155;
+            color: var(--text);
+            padding: 0.625rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .hex-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .small-btn {
+            padding: 0.625rem 1rem;
+            background: #334155;
+            border: none;
+            color: var(--text);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .small-btn:hover {
+            background: #475569;
+        }
+
+        @media (max-width: 400px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛴 Zamelux Green Tuner</h1>
+            <p>E9-2 Privatgelände Speedlimit-Tool</p>
+        </header>
+
+        <div class="safety-notice">
+            <strong>⚠️ Controller Brick Safe</strong>
+            Diese App ändert <em>nur</em> das Software-Speedlimit. 
+            Keine Ampere- oder Phasenstrom-Modifikationen – dein HW9027-Controller bleibt sicher.
+        </div>
+
+        <div class="card">
+            <div class="status-row">
+                <span class="status-badge" id="statusBadge">
+                    <span class="dot"></span>
+                    <span id="statusText">Nicht verbunden</span>
+                </span>
+                <span style="color: var(--muted); font-size: 0.875rem;" id="deviceName">-</span>
+            </div>
+
+            <button class="btn btn-primary" id="connectBtn" onclick="connect()">
+                <span>🔌</span> Mit Scooter verbinden
+            </button>
+
+            <div id="controls" class="hidden">
+                <button class="btn btn-danger" id="unlockBtn" onclick="sendUnlock()" disabled>
+                    <span>🔓</span> Speedlimit aufheben (Privatgelände)
+                </button>
+                <button class="btn btn-secondary" id="resetBtn" onclick="sendReset()" disabled>
+                    <span>🔒</span> Zurücksetzen auf 20 km/h
+                </button>
+            </div>
+
+            <div class="info-grid" id="infoGrid" style="display: none;">
+                <div class="info-item">
+                    <div class="label">Modell</div>
+                    <div class="value">E9-2</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Controller</div>
+                    <div class="value">HW9027</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Batterie</div>
+                    <div class="value">36V / 7.5Ah</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Stromlimit</div>
+                    <div class="value" style="color: var(--accent);">16A (fix)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="command-section">
+                <h3>🔧 Entwickler: Hex-Command Sender</h3>
+                <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.75rem;">
+                    Sende beliebige Hex-Befehle an die RX-Charakteristik. 
+                    Die Checksumme wird automatisch berechnet (XOR über alle Bytes).
+                </p>
+                <div class="hex-input-group">
+                    <input type="text" class="hex-input" id="customHex" 
+                           placeholder="z.B. 01 03 00 00 00 85 00 46..." 
+                           maxlength="95">
+                    <button class="small-btn" onclick="sendCustomHex()">Senden</button>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="small-btn" onclick="setHex('01 03 00 00 00 0F 00 46 00 80 02 00 00 00')">Std-Frame</button>
+                    <button class="small-btn" onclick="setHex('55 AA 03 1E 00 00 00 00 00 00 00 00 00')">Alt-Header</button>
+                    <button class="small-btn" onclick="setHex('5A A5 01 3E 00 00 00 00 00 00 00 00 00 00 00')">Ninebot-Style</button>
+                </div>
+            </div>
+
+            <div id="console" class="console" style="display: none;"></div>
+        </div>
+
+        <div class="card" style="text-align: center; font-size: 0.75rem; color: var(--muted);">
+            <p>Nordic UART Service • M0Robot992538</p>
+            <p style="margin-top: 0.25rem;">Nur für Privatgelände. Keine öffentliche Straßen-Nutzung.</p>
+        </div>
+    </div>
+
+    <script>
+        // ========================================================================
+        // NORDIC UART SERVICE UUIDs (aus deinem Screenshot)
+        // ========================================================================
+        const UART_SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+        const UART_RX_UUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // Write
+        const UART_TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // Notify
+
+        // ========================================================================
+        // STATE
+        // ========================================================================
+        let device = null;
+        let server = null;
+        let rxCharacteristic = null;
+        let txCharacteristic = null;
+        let isConnected = false;
+
+        // ========================================================================
+        // UI HELPERS
+        // ========================================================================
+        const $ = id => document.getElementById(id);
+        
+        function log(msg, type = 'info') {
+            const consoleEl = $('console');
+            const entry = document.createElement('div');
+            entry.className = `entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            consoleEl.appendChild(entry);
+            consoleEl.style.display = 'block';
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function setStatus(text, connected) {
+            $('statusText').textContent = text;
+            const badge = $('statusBadge');
+            if (connected) {
+                badge.classList.add('connected');
+                $('connectBtn').classList.add('hidden');
+                $('controls').classList.remove('hidden');
+                $('infoGrid').style.display = 'grid';
+                $('unlockBtn').disabled = false;
+                $('resetBtn').disabled = false;
+            } else {
+                badge.classList.remove('connected');
+                $('connectBtn').classList.remove('hidden');
+                $('controls').classList.add('hidden');
+                $('infoGrid').style.display = 'none';
+                $('unlockBtn').disabled = true;
+                $('resetBtn').disabled = true;
+                $('deviceName').textContent = '-';
+            }
+        }
+
+        function setHex(hex) {
+            $('customHex').value = hex;
+        }
+
+        // ========================================================================
+        // BLUETOOTH CONNECTION
+        // ========================================================================
+        async function connect() {
+            try {
+                log('Suche nach Bluetooth-Geräten...', 'info');
+                
+                // Filter: entweder Name enthält "M0Robot" oder der Service UUID passt
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [
+                        { namePrefix: 'M0Robot' },
+                        { services: [UART_SERVICE_UUID] }
+                    ],
+                    optionalServices: [UART_SERVICE_UUID]
+                });
+
+                $('deviceName').textContent = device.name || 'Unbekannt';
+                log(`Gefunden: ${device.name}`, 'info');
+
+                device.addEventListener('gattserverdisconnected', onDisconnect);
+                
+                log('Verbinde mit GATT-Server...', 'info');
+                server = await device.gatt.connect();
+                
+                log('Erkenne UART-Service...', 'info');
+                const service = await server.getPrimaryService(UART_SERVICE_UUID);
+                
+                log('Erkenne Charakteristiken...', 'info');
+                rxCharacteristic = await service.getCharacteristic(UART_RX_UUID);
+                txCharacteristic = await service.getCharacteristic(UART_TX_UUID);
+                
+                // Notifications für TX (Empfang) aktivieren
+                await txCharacteristic.startNotifications();
+                txCharacteristic.addEventListener('characteristicvaluechanged', handleNotification);
+                
+                isConnected = true;
+                setStatus('Verbunden', true);
+                log('✅ Verbindung hergestellt. Bereit für Befehle.', 'info');
+                
+            } catch (err) {
+                log(`❌ Fehler: ${err.message}`, 'error');
+                console.error(err);
+            }
+        }
+
+        function onDisconnect(event) {
+            log('🔌 Verbindung getrennt.', 'warn');
+            isConnected = false;
+            setStatus('Nicht verbunden', false);
+            device = null;
+            server = null;
+            rxCharacteristic = null;
+            txCharacteristic = null;
+        }
+
+        function handleNotification(event) {
+            const value = event.target.value;
+            const bytes = new Uint8Array(value.buffer);
+            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+            log(`⬅️ RX: ${hex}`, 'info');
+        }
+
+        // ========================================================================
+        // HEX COMMAND ENGINE
+        // ========================================================================
+        
+        /**
+         * Sendet einen Hex-Befehl an den Scooter.
+         * @param {string} hexString - Hex-Bytes als Leerzeichen-getrennter String
+         * @param {boolean} autoChecksum - Wenn true, wird XOR-Checksumme automatisch angehängt
+         */
+        async function sendHexCommand(hexString, autoChecksum = true) {
+            if (!isConnected || !rxCharacteristic) {
+                log('Nicht verbunden!', 'error');
+                return;
+            }
+
+            try {
+                // Parse Hex-String
+                let bytes = hexString.trim().split(/\s+/).map(b => parseInt(b, 16));
+                
+                if (bytes.some(isNaN)) {
+                    log('Ungültiges Hex-Format!', 'error');
+                    return;
+                }
+
+                // Auto-Checksumme (XOR über alle Bytes) anhängen
+                if (autoChecksum) {
+                    const checksum = bytes.reduce((acc, val) => acc ^ val, 0);
+                    bytes.push(checksum);
+                    log(`Auto-Checksumme: 0x${checksum.toString(16).padStart(2, '0')}`, 'info');
+                }
+
+                const buffer = new Uint8Array(bytes);
+                const hexOut = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+                
+                log(`➡️ TX: ${hexOut}`, 'info');
+                
+                // Write without response bevorzugen, falls unterstützt
+                if (rxCharacteristic.properties.writeWithoutResponse) {
+                    await rxCharacteristic.writeValueWithoutResponse(buffer);
+                } else {
+                    await rxCharacteristic.writeValueWithResponse(buffer);
+                }
+                
+                log('Befehl gesendet.', 'info');
+                
+            } catch (err) {
+                log(`Sendefehler: ${err.message}`, 'error');
+            }
+        }
+
+        // ========================================================================
+        // SPEEDLIMIT BEFEHLE (Platzhalter – anpassbar!)
+        // ========================================================================
+        /*
+         * HINWEIS: Die exakten Befehle für den M0Robot/Zamelux sind proprietär.
+         * Unten sind typische Protokoll-Formate für chinesische Scooter-Controller.
+         * Passe die Werte an, wenn du das korrekte Protokoll durch Sniffen ermittelst.
+         */
+
+        async function sendUnlock() {
+            log('🔓 Sende Speedlimit-Unlock...', 'warn');
+            
+            // Variante A: Typisches 15-Byte LCD->ESC Protokoll (QS-S4 Style)
+            // Byte 0: Header (0x01), Byte 1: Länge (0x03), Byte 5: Gear/Mode
+            // Hier: Gear-Wert auf 0x0F (Sport/Unlock) setzen
+            await sendHexCommand('01 03 00 00 00 0F 00 46 00 80 02 00 00 00', true);
+            
+            // Variante B: Alternativer Header (manchmal bei M0Robot-Klons)
+            setTimeout(async () => {
+                await sendHexCommand('55 AA 03 1E 00 00 00 00 00 00 00 00 00', true);
+            }, 200);
+            
+            log('Speedlimit-Befehl gesendet. Scooter neu starten, falls nötig.', 'warn');
+        }
+
+        async function sendReset() {
+            log('🔒 Sende Speedlimit-Reset auf 20 km/h...', 'info');
+            
+            // Variante A: Standard-Gear (0x05 = Gear 1 / Eco / 20km/h)
+            await sendHexCommand('01 03 00 00 00 05 00 46 00 80 02 00 00 00', true);
+            
+            // Variante B: Reset-Frame
+            setTimeout(async () => {
+                await sendHexCommand('55 AA 03 1E 00 00 00 00 00 00 00 00 00', true);
+            }, 200);
+            
+            log('Zurücksetzen abgeschlossen.', 'info');
+        }
+
+        async function sendCustomHex() {
+            const hex = $('customHex').value;
+            if (!hex.trim()) {
+                log('Bitte Hex-Werte eingeben!', 'warn');
+                return;
+            }
+            await sendHexCommand(hex, true);
+        }
+
+        // ========================================================================
+        // INIT
+        // ========================================================================
+        log('Bereit. Klicke "Mit Scooter verbinden".', 'info');
+        
+        // Prüfe ob Web Bluetooth unterstützt wird
+        if (!navigator.bluetooth) {
+            log('Web Bluetooth API nicht verfügbar! Nutze Chrome oder Bluefy auf iOS.', 'error');
+            $('connectBtn').disabled = true;
+        }
+    </script>
+</body>
+</html>
