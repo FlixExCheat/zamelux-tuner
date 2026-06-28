@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zamelux E9-2 Protokoll-Tuner</title>
+    <title>Zamelux E9-2 Advanced Protocol Cracker</title>
     <style>
         :root {
-            --bg: #0b0f19;
-            --card: #151b2b;
-            --text: #e2e8f0;
-            --muted: #64748b;
+            --bg: #0a0e1a;
+            --card: #111827;
+            --text: #f3f4f6;
+            --muted: #6b7280;
             --accent: #10b981;
             --accent-dim: #059669;
             --danger: #ef4444;
             --danger-dim: #b91c1c;
             --warning: #f59e0b;
             --info: #3b82f6;
-            --border: #1e293b;
+            --purple: #a855f7;
+            --border: #1f2937;
             --success: #22c55e;
         }
 
@@ -30,10 +31,10 @@
             padding: 1rem;
         }
 
-        .container { max-width: 680px; margin: 0 auto; }
+        .container { max-width: 720px; margin: 0 auto; }
 
         header { text-align: center; margin-bottom: 1.5rem; }
-        header h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+        header h1 { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--info)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         header p { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
 
         .card {
@@ -53,25 +54,25 @@
         }
         .tab {
             flex: 1;
-            min-width: 90px;
+            min-width: 70px;
             padding: 0.625rem;
-            background: #1e293b;
+            background: #1f2937;
             border: 1px solid var(--border);
             border-radius: 0.625rem;
             color: var(--muted);
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             cursor: pointer;
             text-align: center;
             transition: all 0.2s;
             white-space: nowrap;
         }
         .tab.active {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--info));
             color: white;
-            border-color: var(--accent);
+            border-color: transparent;
         }
-        .tab:hover:not(.active) { background: #334155; color: var(--text); }
+        .tab:hover:not(.active) { background: #374151; color: var(--text); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -92,14 +93,13 @@
             border-radius: 999px;
             font-size: 0.8rem;
             font-weight: 700;
-            background: #1e293b;
+            background: #1f2937;
             color: var(--muted);
             border: 1px solid var(--border);
         }
         .badge.ok { background: rgba(16,185,129,0.12); color: var(--accent); border-color: rgba(16,185,129,0.3); }
-        .badge.warn { background: rgba(245,158,11,0.12); color: var(--warning); border-color: rgba(245,158,11,0.3); }
-        .badge.err { background: rgba(239,68,68,0.12); color: var(--danger); border-color: rgba(239,68,68,0.3); }
-        .badge.success { background: rgba(34,197,94,0.12); color: var(--success); border-color: rgba(34,197,94,0.3); }
+        .badge.scanning { background: rgba(59,130,246,0.12); color: var(--info); border-color: rgba(59,130,246,0.3); animation: pulse 1.5s infinite; }
+        .badge.hit { background: rgba(168,85,247,0.15); color: var(--purple); border-color: rgba(168,85,247,0.4); }
         .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
         .btn {
@@ -107,7 +107,7 @@
             padding: 0.875rem;
             border: none;
             border-radius: 0.75rem;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.15s;
@@ -118,72 +118,19 @@
             margin-bottom: 0.75rem;
         }
         .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+        .btn-crack {
+            background: linear-gradient(135deg, var(--danger), var(--purple));
+            color: white;
+            box-shadow: 0 4px 15px rgba(239,68,68,0.3);
+        }
+        .btn-crack:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239,68,68,0.4); }
         .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover:not(:disabled) { background: var(--accent-dim); transform: translateY(-1px); }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover:not(:disabled) { background: var(--danger-dim); transform: translateY(-1px); }
-        .btn-secondary { background: #1e293b; color: var(--text); border: 1px solid var(--border); }
-        .btn-secondary:hover:not(:disabled) { background: #334155; }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-dim); }
+        .btn-secondary { background: #1f2937; color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover:not(:disabled) { background: #374151; }
         .btn-info { background: var(--info); color: white; }
-        .btn-info:hover:not(:disabled) { background: #2563eb; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover:not(:disabled) { background: #16a34a; }
-
         .btn-row { display: flex; gap: 0.75rem; }
         .btn-row .btn { flex: 1; margin-bottom: 0; }
-
-        .safety {
-            background: rgba(245,158,11,0.08);
-            border: 1px solid rgba(245,158,11,0.25);
-            border-radius: 0.75rem;
-            padding: 0.875rem;
-            margin-bottom: 1rem;
-            font-size: 0.82rem;
-            color: #fcd34d;
-        }
-        .safety strong { display: block; margin-bottom: 0.2rem; }
-
-        .console {
-            background: #020617;
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            padding: 0.75rem;
-            font-family: 'SF Mono', 'Courier New', monospace;
-            font-size: 0.78rem;
-            max-height: 320px;
-            overflow-y: auto;
-            color: #e2e8f0;
-        }
-        .entry { margin-bottom: 0.4rem; padding: 0.2rem 0; border-bottom: 1px solid #0f172a; }
-        .entry:last-child { border-bottom: none; }
-        .entry .ts { color: #475569; margin-right: 0.5rem; font-size: 0.7rem; }
-        .entry .dir { font-weight: 800; margin-right: 0.4rem; }
-        .entry .dir.tx { color: var(--accent); }
-        .entry .dir.rx { color: var(--info); }
-        .entry .dir.sys { color: var(--muted); }
-        .entry .dir.hit { color: var(--success); }
-        .entry .hex { color: #e2e8f0; word-break: break-all; }
-        .entry .ascii { color: #64748b; margin-left: 0.5rem; }
-        .entry .note { color: var(--warning); margin-left: 0.5rem; font-style: italic; }
-
-        .toolbar {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-        }
-        .small-btn {
-            padding: 0.4rem 0.75rem;
-            background: #1e293b;
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .small-btn:hover { background: #334155; }
-        .small-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .field { margin-bottom: 0.875rem; }
         .field label {
@@ -195,9 +142,9 @@
             letter-spacing: 0.04em;
             margin-bottom: 0.35rem;
         }
-        .field input, .field select, .field textarea {
+        .field input, .field select {
             width: 100%;
-            background: #020617;
+            background: #030712;
             border: 1px solid var(--border);
             color: var(--text);
             padding: 0.6rem 0.75rem;
@@ -205,129 +152,150 @@
             font-family: inherit;
             font-size: 0.9rem;
         }
-        .field input:focus, .field select:focus, .field textarea:focus {
-            outline: none;
-            border-color: var(--accent);
+        .field input:focus, .field select:focus { outline: none; border-color: var(--accent); }
+
+        .console {
+            background: #030712;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 0.75rem;
+            max-height: 300px;
+            overflow-y: auto;
+            color: #e5e7eb;
         }
-        .field textarea { font-family: monospace; min-height: 60px; resize: vertical; }
+        .entry { margin-bottom: 0.35rem; padding: 0.15rem 0; border-bottom: 1px solid #111827; }
+        .entry:last-child { border-bottom: none; }
+        .entry .ts { color: #374151; margin-right: 0.4rem; font-size: 0.7rem; }
+        .entry .dir { font-weight: 800; margin-right: 0.3rem; }
+        .entry .dir.tx { color: var(--accent); }
+        .entry .dir.rx { color: var(--info); }
+        .entry .dir.crack { color: var(--purple); }
+        .entry .dir.sys { color: var(--muted); }
+        .entry .hex { color: #f3f4f6; word-break: break-all; }
+        .entry .note { color: var(--warning); margin-left: 0.4rem; }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        @media (max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } }
+        .toolbar { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+        .small-btn {
+            padding: 0.4rem 0.75rem;
+            background: #1f2937;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .small-btn:hover { background: #374151; }
 
-        .template-grid {
+        .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.5rem;
-            margin-top: 0.75rem;
+            margin-bottom: 1rem;
         }
-        .template-btn {
-            padding: 0.6rem;
-            background: #0f172a;
+        .stat-box {
+            background: #030712;
             border: 1px solid var(--border);
             border-radius: 0.5rem;
-            color: var(--text);
-            font-size: 0.8rem;
-            cursor: pointer;
-            text-align: left;
-            font-family: monospace;
+            padding: 0.75rem;
+            text-align: center;
         }
-        .template-btn:hover { border-color: var(--accent); background: #1e293b; }
-        .template-btn .desc { display: block; font-family: sans-serif; font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; }
-
-        .stats {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-        }
-        .stats span { display: flex; align-items: center; gap: 0.3rem; }
+        .stat-box .num { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
+        .stat-box .label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; margin-top: 0.2rem; }
 
         .hidden { display: none !important; }
 
-        .hint {
-            background: rgba(59,130,246,0.08);
-            border: 1px solid rgba(59,130,246,0.2);
-            border-radius: 0.625rem;
-            padding: 0.75rem;
-            font-size: 0.82rem;
-            color: #93c5fd;
+        .hit-box {
+            background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(59,130,246,0.1));
+            border: 2px solid var(--purple);
+            border-radius: 0.75rem;
+            padding: 1rem;
             margin-bottom: 1rem;
+            animation: glow 2s infinite;
         }
-        .hint strong { color: #60a5fa; }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(168,85,247,0.2); }
+            50% { box-shadow: 0 0 20px rgba(168,85,247,0.4); }
+        }
+        .hit-box h3 { color: var(--purple); font-size: 1rem; margin-bottom: 0.5rem; }
+        .hit-box .hex-display {
+            font-family: monospace;
+            font-size: 1rem;
+            background: #030712;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            word-break: break-all;
+            border: 1px solid var(--border);
+        }
+
+        .analysis-panel {
+            background: #030712;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .analysis-panel h4 { color: var(--info); font-size: 0.85rem; margin-bottom: 0.75rem; }
+        .pattern-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #111827;
+            font-size: 0.8rem;
+        }
+        .pattern-row:last-child { border-bottom: none; }
+        .pattern-row .val { color: var(--accent); font-family: monospace; }
 
         .progress-bar {
             width: 100%;
-            height: 8px;
-            background: #1e293b;
-            border-radius: 4px;
+            height: 10px;
+            background: #1f2937;
+            border-radius: 5px;
             overflow: hidden;
             margin-top: 0.5rem;
         }
         .progress-fill {
             height: 100%;
-            background: var(--accent);
+            background: linear-gradient(90deg, var(--accent), var(--info));
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.5s;
         }
 
-        .hit-box {
-            background: rgba(34,197,94,0.1);
-            border: 2px solid var(--success);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { border-color: var(--success); }
-            50% { border-color: #86efac; }
-        }
-        .hit-box h3 { color: var(--success); font-size: 1rem; margin-bottom: 0.5rem; }
-        .hit-box .hex-display {
-            font-family: monospace;
-            font-size: 1.1rem;
-            background: #020617;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            margin: 0.5rem 0;
-            word-break: break-all;
-        }
-
-        .detection-options {
-            background: #0f172a;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        .detection-options label {
-            display: flex;
-            align-items: center;
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.85rem;
-            cursor: pointer;
+            margin-bottom: 1rem;
         }
-        .detection-options input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--accent);
+        .mode-card {
+            background: #030712;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .mode-card:hover { border-color: var(--accent); }
+        .mode-card.active { border-color: var(--accent); background: rgba(16,185,129,0.08); }
+        .mode-card h4 { font-size: 0.85rem; margin-bottom: 0.25rem; }
+        .mode-card p { font-size: 0.7rem; color: var(--muted); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🛴 Zamelux E9-2 Protokoll-Tuner</h1>
-            <p>Sniffer • Command Lab • Auto-Brute Force</p>
+            <h1>🔐 Zamelux E9-2 Protocol Cracker</h1>
+            <p>Smart Analysis • Pattern Correlation • Auto-Decrypt</p>
         </header>
-
-        <div class="safety">
-            <strong>⚠️ Brick-Safe Modus aktiv</strong>
-            Es werden nur Speedlimit-Befehle getestet. Keine Ampere-Änderungen. 
-            Falsche Befehle werden in 99% der Fälle ignoriert.
-        </div>
 
         <div class="card">
             <div class="status-row">
@@ -341,250 +309,177 @@
             <button class="btn btn-primary" id="connectBtn" onclick="connect()">
                 <span>🔌</span> Mit M0Robot verbinden
             </button>
-
             <div class="btn-row hidden" id="connectedActions">
-                <button class="btn btn-secondary" onclick="sendPing()">
-                    <span>📡</span> Ping testen
-                </button>
-                <button class="btn btn-danger" onclick="disconnect()">
-                    <span>✕</span> Trennen
-                </button>
+                <button class="btn btn-secondary" onclick="disconnect()">✕ Trennen</button>
             </div>
         </div>
 
-        <!-- HIT NOTIFICATION -->
         <div id="hitNotification" class="hit-box hidden">
-            <h3>🎯 TREFFER ERKANNT!</h3>
-            <p style="font-size: 0.85rem; margin-bottom: 0.5rem;">Der Scooter hat auf diesen Befehl reagiert:</p>
+            <h3>🎯 PROTOKOLL GEFUNDEN!</h3>
+            <p style="font-size: 0.85rem;">Der Cracker hat ein reagierendes Byte-Muster identifiziert:</p>
             <div class="hex-display" id="hitHex">-</div>
-            <p style="font-size: 0.8rem; color: var(--muted);">CMD: <b id="hitCmd">-</b> | Wert: <b id="hitVal">-</b></p>
-            <button class="btn btn-success" onclick="useHitCommand()" style="margin-top: 0.75rem; margin-bottom: 0;">
-                <span>✅</span> Diesen Befehl als Unlock speichern
+            <p style="font-size: 0.8rem; color: var(--muted);">Format: <b id="hitFormat">-</b></p>
+            <button class="btn btn-primary" onclick="useHit()" style="margin-top: 0.75rem; margin-bottom: 0;">
+                <span>💾</span> Als Unlock-Befehl speichern
             </button>
         </div>
 
-        <!-- Tabs -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('tuner')">🔧 Tuner</div>
-            <div class="tab" onclick="switchTab('sniffer')">👁️ Sniffer</div>
-            <div class="tab" onclick="switchTab('lab')">🧪 Command Lab</div>
-            <div class="tab" onclick="switchTab('brute')">🎯 Auto-Brute</div>
+            <div class="tab active" onclick="switchTab('cracker')">🔐 Cracker</div>
+            <div class="tab" onclick="switchTab('analysis')">📊 Analyse</div>
+            <div class="tab" onclick="switchTab('manual')">🎮 Manuell</div>
+            <div class="tab" onclick="switchTab('tuner')">🔧 Tuner</div>
+        </div>
+
+        <!-- TAB: CRACKER -->
+        <div id="tab-cracker" class="tab-content active">
+            <div class="card">
+                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase;">Cracker-Modus wählen</h3>
+                
+                <div class="mode-selector">
+                    <div class="mode-card active" onclick="selectMode('smart')" id="modeSmart">
+                        <h4>🧠 Smart Fuzzer</h4>
+                        <p>Analysiert RX-Antworten<br>und sucht Korrelationen</p>
+                    </div>
+                    <div class="mode-card" onclick="selectMode('deep')" id="modeDeep">
+                        <h4>🔬 Deep Scan</h4>
+                        <p>Testet ALLE 256 Command-Bytes<br>mit 4 Header-Formaten</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box"><div class="num" id="statTx">0</div><div class="label">Gesendet</div></div>
+                    <div class="stat-box"><div class="num" id="statRx">0</div><div class="label">Empfangen</div></div>
+                    <div class="stat-box"><div class="num" id="statPatterns">0</div><div class="label">Muster</div></div>
+                    <div class="stat-box"><div class="num" id="statHits">0</div><div class="label">Treffer</div></div>
+                </div>
+
+                <div class="field">
+                    <label>Scan-Tiefe</label>
+                    <select id="scanDepth">
+                        <option value="fast">Schnell (CMD 0x00-0x3F, 4 Formate)</option>
+                        <option value="normal" selected>Normal (CMD 0x00-0x7F, 6 Formate)</option>
+                        <option value="deep">Tief (CMD 0x00-0xFF, 8 Formate)</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Delay zwischen Befehlen (ms)</label>
+                    <input type="number" id="scanDelay" value="1500" min="800" max="3000">
+                </div>
+
+                <button class="btn btn-crack" onclick="startCrack()" id="btnCrack" disabled>
+                    <span>🔐</span> PROTOCOL CRACK STARTEN
+                </button>
+                <button class="btn btn-secondary hidden" onclick="stopCrack()" id="btnCrackStop">
+                    <span>🛑</span> STOPPEN
+                </button>
+
+                <div class="progress-bar"><div class="progress-fill" id="crackProgress"></div></div>
+                <div style="text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem;" id="crackStatus">Bereit zum Cracken</div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted);">Was der Smart Fuzzer macht</h3>
+                <div style="font-size: 0.8rem; color: var(--muted); line-height: 1.6;">
+                    <p style="margin-bottom: 0.5rem;">1. <strong>Baseline:</strong> Sendet einen neutralen Befehl und speichert die RX-Antwort als Referenz.</p>
+                    <p style="margin-bottom: 0.5rem;">2. <strong>Variation:</strong> Ändert ein Byte nach dem anderen und vergleicht die Antwort mit der Baseline.</p>
+                    <p style="margin-bottom: 0.5rem;">3. <strong>Korrelation:</strong> Wenn ein bestimmtes Byte in der Antwort sich ändert, markiert er das als "interessant".</p>
+                    <p>4. <strong>Hit:</strong> Wenn die Antwort-Länge oder Struktur sich signifikant ändert → TREFFER.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: ANALYSIS -->
+        <div id="tab-analysis" class="tab-content">
+            <div class="card">
+                <div class="toolbar">
+                    <button class="small-btn" onclick="clearLog()">🗑️ Clear</button>
+                    <button class="small-btn" onclick="exportAnalysis()">💾 Export</button>
+                </div>
+                <div class="console" id="analysisConsole"></div>
+            </div>
+            
+            <div class="analysis-panel">
+                <h4>📊 Erkannte Muster</h4>
+                <div id="patternList">
+                    <div class="pattern-row"><span>Noch keine Muster erkannt</span><span class="val">-</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: MANUAL -->
+        <div id="tab-manual" class="tab-content">
+            <div class="card">
+                <div class="field">
+                    <label>Raw Hex (beliebiges Format)</label>
+                    <input type="text" id="manualHex" placeholder="z.B. 55 AA 03 1B 19 00 00 00 00 00 00 00">
+                </div>
+                <button class="btn btn-primary" onclick="sendManual()" id="btnManual" disabled>
+                    <span>🚀</span> Senden & Analysieren
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted);">Schnell-Tests</h3>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="quickSend('55 AA 03 1B 19 00 00 00 00 00 00 00')">55 AA</button>
+                    <button class="btn btn-secondary" onclick="quickSend('5A A5 03 1B 19 00 00 00 00 00 00 00')">5A A5</button>
+                </div>
+                <div class="btn-row" style="margin-top: 0.5rem;">
+                    <button class="btn btn-secondary" onclick="quickSend('01 03 00 00 00 19 00 46 00 80 02 00 00 00')">01 03</button>
+                    <button class="btn btn-secondary" onclick="quickSend('A5 5A 03 1B 19 00 00 00 00 00 00 00')">A5 5A</button>
+                </div>
+                <div class="btn-row" style="margin-top: 0.5rem;">
+                    <button class="btn btn-secondary" onclick="quickSend('7E 01 03 00 00 00 19 00 00 7E')">7E .. 7E</button>
+                    <button class="btn btn-secondary" onclick="quickSend('FF FF 03 1B 19 00 00 00 00 00 00 00')">FF FF</button>
+                </div>
+            </div>
         </div>
 
         <!-- TAB: TUNER -->
-        <div id="tab-tuner" class="tab-content active">
+        <div id="tab-tuner" class="tab-content">
             <div class="card">
-                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">Speedlimit Steuerung</h3>
-                
+                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase;">Speedlimit</h3>
                 <div class="btn-row">
-                    <button class="btn btn-danger" id="btnUnlock" onclick="sendUnlock()" disabled>
+                    <button class="btn btn-crack" id="btnUnlock" onclick="sendUnlock()" disabled>
                         <span>🔓</span> Unlock (Privat)
                     </button>
                     <button class="btn btn-secondary" id="btnReset" onclick="sendReset()" disabled>
                         <span>🔒</span> Reset 20 km/h
                     </button>
                 </div>
-
-                <div class="grid-2" style="margin-top: 1rem;">
-                    <div class="field">
-                        <label>Speedlimit (km/h)</label>
-                        <input type="number" id="customSpeed" value="25" min="1" max="99">
-                    </div>
-                    <div class="field">
-                        <label>&nbsp;</label>
-                        <button class="btn btn-info" style="margin:0;" onclick="sendCustomSpeed()" disabled id="btnCustomSpeed">
-                            Speed setzen
-                        </button>
-                    </div>
+                <div class="field" style="margin-top: 1rem;">
+                    <label>Custom Speed (km/h)</label>
+                    <input type="number" id="customSpeed" value="25" min="1" max="99">
                 </div>
-            </div>
-
-            <div class="card">
-                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted); text-transform: uppercase;">Schnell-Test Befehle</h3>
-                <div class="template-grid">
-                    <button class="template-btn" onclick="quickSend('55 AA 03 1B 00 00 00 00 00 00 00 00 00')">
-                        55 AA 03 1B...
-                        <span class="desc">Alt-Header, Gear-Byte</span>
-                    </button>
-                    <button class="template-btn" onclick="quickSend('01 03 00 00 00 0F 00 46 00 80 02 00 00 00')">
-                        01 03 00 0F...
-                        <span class="desc">QS-S4 Gear 3</span>
-                    </button>
-                    <button class="template-btn" onclick="quickSend('5A A5 01 3E 00 00 00 00 00 00 00 00 00 00 00')">
-                        5A A5 01 3E...
-                        <span class="desc">Ninebot-Style</span>
-                    </button>
-                    <button class="template-btn" onclick="quickSend('A5 5A 01 00 00 00 00 00 00 00 00 00 00 00')">
-                        A5 5A 01 00...
-                        <span class="desc">Kugoo-Style</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: SNIFFER -->
-        <div id="tab-sniffer" class="tab-content">
-            <div class="card">
-                <div class="stats">
-                    <span>📤 TX: <b id="statTx">0</b></span>
-                    <span>📥 RX: <b id="statRx">0</b></span>
-                    <span>🎯 Hits: <b id="statHits">0</b></span>
-                    <span>⏱️ Letzte: <b id="statLast">-</b></span>
-                </div>
-                <div class="toolbar">
-                    <button class="small-btn" onclick="clearLog()">🗑️ Clear</button>
-                    <button class="small-btn" onclick="exportLog()">💾 Export</button>
-                    <button class="small-btn" onclick="toggleAutoScroll()" id="btnAutoScroll">⏸️ Pause</button>
-                </div>
-                <div class="console" id="snifferConsole"></div>
-            </div>
-        </div>
-
-        <!-- TAB: COMMAND LAB -->
-        <div id="tab-lab" class="tab-content">
-            <div class="card">
-                <div class="field">
-                    <label>Raw Hex Command</label>
-                    <input type="text" id="rawHex" placeholder="z.B. 55 AA 03 1B 0F ...">
-                </div>
-                <div class="grid-2">
-                    <div class="field">
-                        <label>Checksumme</label>
-                        <select id="checksumMode">
-                            <option value="xor">XOR (alle Bytes)</option>
-                            <option value="xor_skip">XOR (ohne Header)</option>
-                            <option value="sum">Summe (mod 256)</option>
-                            <option value="crc8">CRC-8</option>
-                            <option value="none">Keine (manuell)</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Header-Format</label>
-                        <select id="headerMode">
-                            <option value="none">Raw (kein Auto)</option>
-                            <option value="55aa">55 AA + Länge</option>
-                            <option value="5aa5">5A A5 + Länge</option>
-                            <option value="01">01 03 (QS-S4)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="field">
-                    <label>Payload (Hex, ohne Header/Checksum)</label>
-                    <input type="text" id="payloadHex" placeholder="z.B. 1B 00 00 00 00 00 00 00 00">
-                </div>
-                <button class="btn btn-primary" onclick="sendFromLab()" id="btnLabSend" disabled>
-                    <span>🚀</span> Befehl senden
+                <button class="btn btn-primary" onclick="sendCustomSpeed()" id="btnCustomSpeed" disabled>
+                    Speed setzen
                 </button>
-            </div>
-
-            <div class="card">
-                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted);">Protokoll-Templates</h3>
-                <div class="template-grid">
-                    <button class="template-btn" onclick="loadTemplate('m0robot')">
-                        M0Robot Standard
-                        <span class="desc">55 AA 03 [CMD] [VAL] ...</span>
-                    </button>
-                    <button class="template-btn" onclick="loadTemplate('qss4')">
-                        QS-S4 LCD
-                        <span class="desc">01 03 00 00 00 [GEAR] ...</span>
-                    </button>
-                    <button class="template-btn" onclick="loadTemplate('ninebot')">
-                        Ninebot-Style
-                        <span class="desc">5A A5 01 3E ...</span>
-                    </button>
-                    <button class="template-btn" onclick="loadTemplate('kugoo')">
-                        Kugoo G-Booster
-                        <span class="desc">A5 5A 01 ...</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: AUTO-BRUTE -->
-        <div id="tab-brute" class="tab-content">
-            <div class="card">
-                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase;">🎯 Automatische Erkennung</h3>
-                
-                <div class="hint">
-                    <strong>So funktioniert's:</strong> Die App sendet Befehle und erkennt automatisch, wenn der Scooter reagiert (z.B. durch eine RX-Antwort, die nicht nur ein ACK ist). Du musst nur zuhören, ob der Motor piept oder das Display flackert!
-                </div>
-
-                <div class="detection-options">
-                    <label><input type="checkbox" id="detectRx" checked> 🔔 RX-Antwort erkennen (Controller antwortet mit Daten)</label>
-                    <label><input type="checkbox" id="detectLength"> 📏 Ungewöhnliche Antwort-Länge (nicht Standard-ACK)</label>
-                    <label><input type="checkbox" id="detectPattern"> 🔍 Bekanntes Muster in Antwort (z.B. Status-Byte ändert sich)</label>
-                    <label><input type="checkbox" id="detectSilence"> 🤫 Plötzliche Stille nach Befehl (keine ACK = möglicher Treffer)</label>
-                </div>
-
-                <div class="grid-2">
-                    <div class="field">
-                        <label>Header (Hex)</label>
-                        <input type="text" id="bfHeader" value="55 AA 03">
-                    </div>
-                    <div class="field">
-                        <label>Command Byte (Start)</label>
-                        <input type="text" id="bfCmdStart" value="10">
-                    </div>
-                    <div class="field">
-                        <label>Wert-Byte (Start)</label>
-                        <input type="text" id="bfValStart" value="00">
-                    </div>
-                    <div class="field">
-                        <label>Range (0 bis X)</label>
-                        <input type="number" id="bfRange" value="50">
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label>Delay zwischen Befehlen (ms)</label>
-                    <input type="number" id="bfDelay" value="1000" min="500" max="5000">
-                </div>
-
-                <button class="btn btn-danger" onclick="startBruteForce()" id="btnBruteStart" disabled>
-                    <span>🎯</span> Auto-Brute Force starten
-                </button>
-                <button class="btn btn-secondary hidden" onclick="stopBruteForce()" id="btnBruteStop">
-                    <span>🛑</span> Stoppen
-                </button>
-
-                <div class="progress-bar"><div class="progress-fill" id="bruteProgress"></div></div>
-                <div style="text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem;" id="bruteStatus">Bereit</div>
-            </div>
-
-            <div class="card">
-                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted);">Gespeicherte Treffer</h3>
-                <div id="savedHits" style="font-size: 0.8rem; color: var(--muted);">Noch keine Treffer gespeichert.</div>
             </div>
         </div>
 
         <div class="card" style="text-align: center; font-size: 0.7rem; color: var(--muted); border: none; background: transparent;">
-            <p>UUID: 6E400001-B5A3-F393-E0A9-E50E24DCCA9E</p>
-            <p style="margin-top: 0.2rem;">Nur für Privatgelände. Keine öffentliche Nutzung.</p>
+            <p>HW9027-ZYD009-E9 • 36V 16A • Nordic UART</p>
+            <p style="margin-top: 0.2rem;">Nur für Privatgelände.</p>
         </div>
     </div>
 
     <script>
-        // ========================================================================
-        // UUIDs
-        // ========================================================================
         const UART_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-        const UART_RX      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-        const UART_TX      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+        const UART_RX = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+        const UART_TX = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
-        // ========================================================================
-        // STATE
-        // ========================================================================
         let device = null, server = null, rxChar = null, txChar = null;
-        let isConnected = false, autoScroll = true;
-        let txCount = 0, rxCount = 0, hitCount = 0;
-        let bruteForceRunning = false, bruteForceAbort = false;
-        let lastRxTime = 0, lastRxData = '';
-        let savedHitCommand = null; // Der Befehl, der als Treffer erkannt wurde
-        let hitLog = []; // Alle Treffer speichern
+        let isConnected = false;
+        let crackRunning = false, crackAbort = false;
+        let txCount = 0, rxCount = 0, patternCount = 0, hitCount = 0;
+        let baselineResponse = null;
+        let responseHistory = [];
+        let detectedPatterns = [];
+        let savedHit = null;
+        let currentMode = 'smart';
 
-        // ========================================================================
-        // UI
-        // ========================================================================
         const $ = id => document.getElementById(id);
         function switchTab(name) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -593,57 +488,40 @@
             $(`tab-${name}`).classList.add('active');
         }
 
-        function logSniffer(direction, hex, note = '') {
-            const con = $('snifferConsole');
+        function selectMode(mode) {
+            currentMode = mode;
+            $('modeSmart').className = 'mode-card' + (mode === 'smart' ? ' active' : '');
+            $('modeDeep').className = 'mode-card' + (mode === 'deep' ? ' active' : '');
+        }
+
+        function logAnalysis(direction, hex, note = '') {
+            const con = $('analysisConsole');
             const ts = new Date().toLocaleTimeString('de-DE', {hour12:false});
-            const dirClass = direction === 'TX' ? 'tx' : (direction === 'RX' ? 'rx' : (direction === 'HIT' ? 'hit' : 'sys'));
-            const dirIcon = direction === 'TX' ? '➡️' : (direction === 'RX' ? '⬅️' : (direction === 'HIT' ? '🎯' : '⚙️'));
-            
-            const bytes = hex.split(' ').filter(x=>x).map(b => parseInt(b,16)).filter(x=>!isNaN(x));
-            const ascii = bytes.map(b => (b>=32&&b<=126)?String.fromCharCode(b):'.').join('');
+            const dirClass = direction === 'TX' ? 'tx' : (direction === 'RX' ? 'rx' : (direction === 'CRACK' ? 'crack' : 'sys'));
+            const dirIcon = direction === 'TX' ? '➡️' : (direction === 'RX' ? '⬅️' : (direction === 'CRACK' ? '🔐' : '⚙️'));
             
             const entry = document.createElement('div');
             entry.className = 'entry';
-            entry.innerHTML = `<span class="ts">${ts}</span><span class="dir ${dirClass}">${dirIcon} ${direction}</span><span class="hex">${hex}</span><span class="ascii">[${ascii}]</span>${note?'<span class="note">'+note+'</span>':''}`;
+            entry.innerHTML = `<span class="ts">${ts}</span><span class="dir ${dirClass}">${dirIcon} ${direction}</span><span class="hex">${hex}</span><span class="note">${note}</span>`;
             con.appendChild(entry);
-            
-            if (direction === 'TX') { txCount++; $('statTx').textContent = txCount; }
-            if (direction === 'RX') { rxCount++; $('statRx').textContent = rxCount; lastRxTime = Date.now(); lastRxData = hex; }
-            if (direction === 'HIT') { hitCount++; $('statHits').textContent = hitCount; }
-            $('statLast').textContent = new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-            
-            if (autoScroll) con.scrollTop = con.scrollHeight;
+            con.scrollTop = con.scrollHeight;
         }
 
-        function clearLog() { $('snifferConsole').innerHTML = ''; txCount=0; rxCount=0; hitCount=0; $('statTx').textContent='0'; $('statRx').textContent='0'; $('statHits').textContent='0'; }
-        function toggleAutoScroll() { autoScroll = !autoScroll; $('btnAutoScroll').textContent = autoScroll ? '⏸️ Pause' : '▶️ Resume'; }
-        function exportLog() {
-            const entries = Array.from($('snifferConsole').children).map(e => e.textContent).join('\n');
-            const blob = new Blob([entries], {type:'text/plain'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `sniffer_${Date.now()}.txt`; a.click();
-        }
-
-        // ========================================================================
-        // CONNECTION
-        // ========================================================================
         async function connect() {
             try {
                 if (!navigator.bluetooth) { alert('Web Bluetooth nicht verfügbar. Nutze Chrome oder Bluefy.'); return; }
+                logAnalysis('SYS', '', 'Scanne nach M0Robot...');
                 
-                logSniffer('SYS', '', 'Starte Scan nach M0Robot...');
                 device = await navigator.bluetooth.requestDevice({
                     filters: [{ namePrefix: 'M0Robot' }, { services: [UART_SERVICE] }],
                     optionalServices: [UART_SERVICE]
                 });
 
                 $('deviceName').textContent = device.name || 'Unbekannt';
-                logSniffer('SYS', '', `Gefunden: ${device.name}`);
+                logAnalysis('SYS', '', `Gefunden: ${device.name}`);
                 
                 device.addEventListener('gattserverdisconnected', onDisconnect);
                 server = await device.gatt.connect();
-                
                 const service = await server.getPrimaryService(UART_SERVICE);
                 rxChar = await service.getCharacteristic(UART_RX);
                 txChar = await service.getCharacteristic(UART_TX);
@@ -653,10 +531,10 @@
                 
                 isConnected = true;
                 updateUI();
-                logSniffer('SYS', '', '✅ Verbunden. Notifications aktiv.');
+                logAnalysis('SYS', '', '✅ Verbunden. Cracker bereit.');
                 
             } catch(err) {
-                logSniffer('SYS', '', `❌ Fehler: ${err.message}`);
+                logAnalysis('SYS', '', `❌ Fehler: ${err.message}`);
             }
         }
 
@@ -668,18 +546,20 @@
         function onDisconnect() {
             isConnected = false; rxChar = null; txChar = null;
             updateUI();
-            logSniffer('SYS', '', '🔌 Getrennt');
+            logAnalysis('SYS', '', '🔌 Getrennt');
         }
 
         function handleNotification(event) {
             const val = event.target.value;
             const bytes = new Uint8Array(val.buffer);
             const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(' ');
-            logSniffer('RX', hex, 'Notification');
             
-            // Auto-Detection: Während Brute Force läuft, prüfe ob das eine "interessante" Antwort ist
-            if (bruteForceRunning) {
-                checkForHit(hex, bytes);
+            rxCount++; $('statRx').textContent = rxCount;
+            logAnalysis('RX', hex, `${bytes.length} Bytes`);
+            
+            // Smart Analysis
+            if (crackRunning) {
+                analyzeResponse(hex, bytes);
             }
         }
 
@@ -690,180 +570,30 @@
                 $('statusText').textContent = 'Verbunden';
                 $('connectBtn').classList.add('hidden');
                 $('connectedActions').classList.remove('hidden');
+                $('btnCrack').disabled = false;
+                $('btnManual').disabled = false;
                 $('btnUnlock').disabled = false;
                 $('btnReset').disabled = false;
                 $('btnCustomSpeed').disabled = false;
-                $('btnLabSend').disabled = false;
-                $('btnBruteStart').disabled = false;
             } else {
                 badge.className = 'badge';
                 $('statusText').textContent = 'Offline';
                 $('connectBtn').classList.remove('hidden');
                 $('connectedActions').classList.add('hidden');
+                $('btnCrack').disabled = true;
+                $('btnManual').disabled = true;
                 $('btnUnlock').disabled = true;
                 $('btnReset').disabled = true;
                 $('btnCustomSpeed').disabled = true;
-                $('btnLabSend').disabled = true;
-                $('btnBruteStart').disabled = true;
             }
         }
 
-        // ========================================================================
-        // AUTO-HIT DETECTION
-        // ========================================================================
-        let lastSentCommand = null;
-        let lastSentTime = 0;
-        let silenceTimer = null;
-
-        function checkForHit(rxHex, rxBytes) {
-            const detectRx = $('detectRx').checked;
-            const detectLength = $('detectLength').checked;
-            const detectPattern = $('detectPattern').checked;
-            const detectSilence = $('detectSilence').checked;
-            
-            let isHit = false;
-            let reason = '';
-
-            // 1. RX-Antwort erkannt (wenn der Controller mit mehr als 0 Bytes antwortet)
-            if (detectRx && rxBytes.length > 0) {
-                // Prüfe ob es ein "echter" Status ist und nicht nur ein leeres ACK
-                if (rxBytes.length > 3) {
-                    isHit = true;
-                    reason = `RX-Antwort mit ${rxBytes.length} Bytes`;
-                }
-            }
-
-            // 2. Ungewöhnliche Länge
-            if (detectLength && rxBytes.length > 0) {
-                // Typische ACKs sind 1-3 Bytes. Alles darüber ist interessant.
-                if (rxBytes.length >= 5) {
-                    isHit = true;
-                    reason = `Ungewöhnliche Antwort-Länge: ${rxBytes.length}`;
-                }
-            }
-
-            // 3. Muster-Erkennung (Status-Byte ändert sich)
-            if (detectPattern && lastRxData) {
-                const lastBytes = lastRxData.split(' ').filter(x=>x).map(b=>parseInt(b,16));
-                if (lastBytes.length === rxBytes.length && lastBytes.length > 3) {
-                    // Vergleiche Byte für Byte - wenn sich mehr als 2 unterscheiden, ist es ein Status-Update
-                    let diffs = 0;
-                    for (let i=0; i<Math.min(lastBytes.length, rxBytes.length); i++) {
-                        if (lastBytes[i] !== rxBytes[i]) diffs++;
-                    }
-                    if (diffs >= 2) {
-                        isHit = true;
-                        reason = `Status-Muster geändert (${diffs} Bytes unterschiedlich)`;
-                    }
-                }
-            }
-
-            if (isHit && lastSentCommand) {
-                showHit(lastSentCommand, reason);
-            }
-        }
-
-        function showHit(cmd, reason) {
-            const hex = cmd.bytes.map(b => b.toString(16).padStart(2,'0')).join(' ');
-            savedHitCommand = cmd;
-            
-            logSniffer('HIT', hex, `TREFFER! ${reason}`);
-            
-            $('hitHex').textContent = hex;
-            $('hitCmd').textContent = `0x${cmd.cmd.toString(16).padStart(2,'0').toUpperCase()}`;
-            $('hitVal').textContent = `0x${cmd.val.toString(16).padStart(2,'0').toUpperCase()}`;
-            $('hitNotification').classList.remove('hidden');
-            
-            // Speichere Treffer
-            hitLog.push({...cmd, reason, time: new Date().toISOString()});
-            updateSavedHits();
-            
-            // Vibration wenn möglich
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        }
-
-        function updateSavedHits() {
-            const container = $('savedHits');
-            if (hitLog.length === 0) {
-                container.innerHTML = 'Noch keine Treffer gespeichert.';
-                return;
-            }
-            container.innerHTML = hitLog.map((h, i) => 
-                `<div style="margin-bottom:0.5rem; padding:0.5rem; background:#0f172a; border-radius:0.5rem;">
-                    <b>#${i+1}</b> CMD 0x${h.cmd.toString(16).padStart(2,'0').toUpperCase()} 
-                    VAL 0x${h.val.toString(16).padStart(2,'0').toUpperCase()} 
-                    <span style="color:var(--success)">${h.reason}</span>
-                </div>`
-            ).join('');
-        }
-
-        function useHitCommand() {
-            if (!savedHitCommand) return;
-            // Speichere als "Unlock" Befehl
-            localStorage.setItem('zamelux_unlock_cmd', JSON.stringify(savedHitCommand));
-            logSniffer('SYS', '', '✅ Treffer als Unlock-Befehl gespeichert!');
-            $('hitNotification').classList.add('hidden');
-            alert('Befehl gespeichert! Wechsle zum Tuner-Tab und teste "Unlock".');
-        }
-
-        // ========================================================================
-        // CHECKSUM & BUILDER
-        // ========================================================================
-        function calcChecksum(bytes, mode) {
-            if (mode === 'none') return [];
-            if (mode === 'xor') {
-                const xor = bytes.reduce((a,b) => a ^ b, 0);
-                return [xor];
-            }
-            if (mode === 'xor_skip') {
-                const xor = bytes.slice(2).reduce((a,b) => a ^ b, 0);
-                return [xor];
-            }
-            if (mode === 'sum') {
-                const sum = bytes.reduce((a,b) => a + b, 0) & 0xFF;
-                return [sum];
-            }
-            if (mode === 'crc8') {
-                let crc = 0;
-                for (let b of bytes) {
-                    crc ^= b;
-                    for (let i=0; i<8; i++) crc = (crc & 0x80) ? ((crc << 1) ^ 0x31) & 0xFF : (crc << 1) & 0xFF;
-                }
-                return [crc];
-            }
-            return [];
-        }
-
-        function buildCommand(payloadHex, headerMode, checksumMode) {
-            let bytes = [];
-            if (headerMode === '55aa') {
-                const payload = parseHex(payloadHex);
-                bytes = [0x55, 0xAA, payload.length, ...payload];
-            } else if (headerMode === '5aa5') {
-                const payload = parseHex(payloadHex);
-                bytes = [0x5A, 0xA5, payload.length, ...payload];
-            } else if (headerMode === '01') {
-                const p = parseHex(payloadHex);
-                bytes = [0x01, 0x03, 0x00, 0x00, 0x00, ...(p.length?p:[0x0F]), 0x00, 0x46, 0x00, 0x80, 0x02, 0x00, 0x00, 0x00];
-            } else {
-                bytes = parseHex(payloadHex);
-            }
-            const cs = calcChecksum(bytes, checksumMode);
-            return [...bytes, ...cs];
-        }
-
-        function parseHex(str) {
-            return str.trim().split(/\s+/).filter(x=>x).map(b => parseInt(b,16)).filter(x=>!isNaN(x));
-        }
-
-        // ========================================================================
-        // SENDER
-        // ========================================================================
         async function sendRaw(bytes, note='') {
-            if (!isConnected || !rxChar) { logSniffer('SYS', '', 'Nicht verbunden!'); return false; }
+            if (!isConnected || !rxChar) { logAnalysis('SYS', '', 'Nicht verbunden!'); return false; }
             try {
                 const hex = bytes.map(b => b.toString(16).padStart(2,'0')).join(' ');
-                logSniffer('TX', hex, note);
+                txCount++; $('statTx').textContent = txCount;
+                logAnalysis('TX', hex, note);
                 
                 const buf = new Uint8Array(bytes);
                 if (rxChar.properties.writeWithoutResponse) {
@@ -873,174 +603,260 @@
                 }
                 return true;
             } catch(err) {
-                logSniffer('SYS', '', `Sendefehler: ${err.message}`);
+                logAnalysis('SYS', '', `Sendefehler: ${err.message}`);
                 return false;
             }
         }
 
-        async function quickSend(hexString) {
-            const bytes = parseHex(hexString);
-            lastSentCommand = { bytes, cmd: bytes[3]||0, val: bytes[4]||0, raw: hexString };
-            lastSentTime = Date.now();
-            await sendRaw(bytes, 'Quick-Test');
+        // ========================================================================
+        // SMART ANALYSIS ENGINE
+        // ========================================================================
+        function analyzeResponse(hex, bytes) {
+            responseHistory.push({ hex, bytes, time: Date.now() });
+            
+            // 1. Prüfe auf Baseline-Differenz
+            if (baselineResponse && baselineResponse.hex !== hex) {
+                const diff = findByteDifference(baselineResponse.bytes, bytes);
+                if (diff.length > 0) {
+                    patternCount++; $('statPatterns').textContent = patternCount;
+                    logAnalysis('CRACK', hex, `MUSTER! Bytes ${diff.map(d=>d.pos).join(',')} ändern sich`);
+                    addPattern(`Baseline-Diff`, `Bytes ${diff.map(d=>`[${d.pos}]=0x${d.val.toString(16)}`).join(', ')}`);
+                    
+                    // Wenn sich mehr als 2 Bytes ändern, könnte das ein Status-Update sein
+                    if (diff.length >= 2) {
+                        checkForHit(hex, bytes, 'Baseline-Differenz erkannt');
+                    }
+                }
+            }
+            
+            // 2. Prüfe auf ungewöhnliche Länge
+            if (bytes.length >= 6) {
+                logAnalysis('CRACK', hex, `Ungewöhnliche Länge: ${bytes.length} Bytes`);
+            }
+            
+            // 3. Prüfe auf bekannte ACK-Muster
+            if (bytes.length === 1 && bytes[0] === 0x00) {
+                logAnalysis('CRACK', hex, 'ACK (0x00)');
+            }
+            if (bytes.length === 2 && bytes[0] === 0x55 && bytes[1] === 0xAA) {
+                logAnalysis('CRACK', hex, 'Echo-Header erkannt');
+            }
         }
 
-        // ========================================================================
-        // TUNER ACTIONS
-        // ========================================================================
-        async function sendUnlock() {
-            const saved = localStorage.getItem('zamelux_unlock_cmd');
-            if (saved) {
-                const cmd = JSON.parse(saved);
-                logSniffer('SYS', '', '🔓 Sende gespeicherten Unlock-Befehl...');
-                await sendRaw(cmd.bytes, 'Saved Unlock');
+        function findByteDifference(a, b) {
+            const diffs = [];
+            const len = Math.min(a.length, b.length);
+            for (let i = 0; i < len; i++) {
+                if (a[i] !== b[i]) diffs.push({ pos: i, val: b[i], old: a[i] });
+            }
+            return diffs;
+        }
+
+        function addPattern(name, detail) {
+            detectedPatterns.push({ name, detail, time: new Date().toLocaleTimeString() });
+            updatePatternList();
+        }
+
+        function updatePatternList() {
+            const list = $('patternList');
+            if (detectedPatterns.length === 0) {
+                list.innerHTML = '<div class="pattern-row"><span>Noch keine Muster erkannt</span><span class="val">-</span></div>';
                 return;
             }
+            list.innerHTML = detectedPatterns.slice(-10).map(p => 
+                `<div class="pattern-row"><span>${p.name} <span style="color:var(--muted);font-size:0.7rem;">${p.time}</span></span><span class="val">${p.detail}</span></div>`
+            ).join('');
+        }
+
+        function checkForHit(hex, bytes, reason) {
+            if (hitCount > 0) return; // Nur ersten Treffer speichern
+            hitCount++; $('statHits').textContent = hitCount;
+            savedHit = { hex, bytes, reason };
             
-            logSniffer('SYS', '', '🔓 Sende Unlock-Befehle...');
-            await sendRaw(buildCommand('0F', '01', 'xor'), 'Unlock QS-S4 Gear3');
-            await sleep(300);
-            await sendRaw(buildCommand('1B 0F 00 00 00 00 00 00 00', '55aa', 'xor'), 'Unlock M0Robot 0x1B');
-            await sleep(300);
-            await sendRaw(buildCommand('1B 19 00 00 00 00 00 00 00', '55aa', 'xor'), 'Unlock Speed 25km/h');
-            logSniffer('SYS', '', 'Unlock gesendet. Scooter neu starten, falls nötig.');
-        }
-
-        async function sendReset() {
-            logSniffer('SYS', '', '🔒 Sende Reset auf 20 km/h...');
-            await sendRaw(buildCommand('05', '01', 'xor'), 'Reset QS-S4 Gear1');
-            await sleep(300);
-            await sendRaw(buildCommand('1B 05 00 00 00 00 00 00 00', '55aa', 'xor'), 'Reset M0Robot 0x1B');
-            await sleep(300);
-            await sendRaw(buildCommand('1B 14 00 00 00 00 00 00 00', '55aa', 'xor'), 'Reset Speed 20km/h');
-            logSniffer('SYS', '', 'Reset abgeschlossen.');
-        }
-
-        async function sendCustomSpeed() {
-            const speed = parseInt($('customSpeed').value) || 20;
-            const hexVal = speed.toString(16).padStart(2,'0');
-            logSniffer('SYS', '', `Setze Speed auf ${speed} km/h (0x${hexVal})...`);
-            await sendRaw(buildCommand('1B ' + hexVal + ' 00 00 00 00 00 00 00', '55aa', 'xor'), `Custom Speed ${speed}`);
-            await sleep(200);
-            await sendRaw(buildCommand(hexVal, '01', 'xor'), `Custom Gear ${speed}`);
-        }
-
-        async function sendPing() {
-            logSniffer('SYS', '', '📡 Sende Ping-Test...');
-            await sendRaw(buildCommand('00 00 00 00 00 00 00 00 00', '55aa', 'xor'), 'Ping Test');
-        }
-
-        // ========================================================================
-        // COMMAND LAB
-        // ========================================================================
-        function loadTemplate(type) {
-            if (type === 'm0robot') {
-                $('headerMode').value = '55aa';
-                $('checksumMode').value = 'xor';
-                $('payloadHex').value = '1B 0F 00 00 00 00 00 00 00';
-            } else if (type === 'qss4') {
-                $('headerMode').value = '01';
-                $('checksumMode').value = 'xor';
-                $('payloadHex').value = '0F';
-            } else if (type === 'ninebot') {
-                $('headerMode').value = '5aa5';
-                $('checksumMode').value = 'sum';
-                $('payloadHex').value = '3E 00 00 00 00 00 00 00 00 00 00';
-            } else if (type === 'kugoo') {
-                $('headerMode').value = 'none';
-                $('checksumMode').value = 'xor';
-                $('rawHex').value = 'A5 5A 01 00 00 00 00 00 00 00 00 00 00';
-            }
-        }
-
-        async function sendFromLab() {
-            const raw = $('rawHex').value.trim();
-            const payload = $('payloadHex').value.trim();
-            const header = $('headerMode').value;
-            const cs = $('checksumMode').value;
+            logAnalysis('CRACK', hex, `🎯 TREFFER: ${reason}`);
             
-            let bytes;
-            if (raw) {
-                bytes = parseHex(raw);
-                if (cs !== 'none') {
-                    const c = calcChecksum(bytes, cs);
-                    bytes = [...bytes, ...c];
-                }
-            } else {
-                bytes = buildCommand(payload, header, cs);
-            }
+            $('hitHex').textContent = hex;
+            $('hitFormat').textContent = reason;
+            $('hitNotification').classList.remove('hidden');
             
-            lastSentCommand = { bytes, cmd: bytes[3]||0, val: bytes[4]||0, raw: bytes.map(b=>b.toString(16).padStart(2,'0')).join(' ') };
-            lastSentTime = Date.now();
-            await sendRaw(bytes, 'Lab-Command');
-            $('rawHex').value = '';
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+            
+            // Stoppe Crack
+            crackAbort = true;
         }
 
         // ========================================================================
-        // AUTO-BRUTE FORCE
+        // CRACK ENGINE
         // ========================================================================
-        async function startBruteForce() {
-            if (bruteForceRunning) return;
-            bruteForceRunning = true; bruteForceAbort = false;
-            $('btnBruteStart').classList.add('hidden');
-            $('btnBruteStop').classList.remove('hidden');
+        async function startCrack() {
+            if (crackRunning) return;
+            crackRunning = true; crackAbort = false;
+            $('btnCrack').classList.add('hidden');
+            $('btnCrackStop').classList.remove('hidden');
             $('hitNotification').classList.add('hidden');
+            $('statusBadge').className = 'badge scanning';
+            $('statusText').textContent = 'Crackt...';
             
-            const header = parseHex($('bfHeader').value || '55 AA 03');
-            const cmdStart = parseInt($('bfCmdStart').value || '10', 16);
-            const valStart = parseInt($('bfValStart').value || '00', 16);
-            const range = parseInt($('bfRange').value || 50);
-            const delay = parseInt($('bfDelay').value || 1000);
+            const depth = $('scanDepth').value;
+            const delay = parseInt($('scanDelay').value) || 1500;
             
-            logSniffer('SYS', '', `🎯 Auto-Brute Force: CMD 0x${cmdStart.toString(16)}..0x${(cmdStart+range).toString(16)}, Wert 0x${valStart.toString(16)}..0x${(valStart+range).toString(16)}`);
+            // Formate basierend auf Tiefe
+            let formats = [
+                { name: '55AA+XOR', header: [0x55, 0xAA], len: true, cs: 'xor' },
+                { name: '5AA5+XOR', header: [0x5A, 0xA5], len: true, cs: 'xor' },
+                { name: '0103+XOR', header: [0x01, 0x03], len: false, cs: 'xor', fixed: [0x00,0x00,0x00] },
+                { name: 'A55A+XOR', header: [0xA5, 0x5A], len: true, cs: 'xor' }
+            ];
             
-            let total = range * range;
-            let current = 0;
+            if (depth === 'normal' || depth === 'deep') {
+                formats.push(
+                    { name: '55AA+SUM', header: [0x55, 0xAA], len: true, cs: 'sum' },
+                    { name: '7E..7E', header: [0x7E], len: false, cs: 'none', end: [0x7E] }
+                );
+            }
+            if (depth === 'deep') {
+                formats.push(
+                    { name: 'RAW+XOR', header: [], len: false, cs: 'xor' },
+                    { name: 'FFFF+XOR', header: [0xFF, 0xFF], len: true, cs: 'xor' }
+                );
+            }
             
-            outer: for (let c = cmdStart; c < cmdStart + range && c <= 0xFF; c++) {
-                for (let v = valStart; v < valStart + range && v <= 0xFF; v++) {
-                    if (bruteForceAbort) { logSniffer('SYS', '', '🛑 Abgebrochen.'); break outer; }
+            let cmdRange = depth === 'fast' ? 0x3F : (depth === 'normal' ? 0x7F : 0xFF);
+            let totalTests = formats.length * (cmdRange + 1);
+            let currentTest = 0;
+            
+            logAnalysis('CRACK', '', `🔐 STARTE CRACK: ${formats.length} Formate, CMD 0x00-0x${cmdRange.toString(16).toUpperCase()}, ${totalTests} Tests`);
+            
+            // Phase 1: Baseline ermitteln
+            logAnalysis('CRACK', '', 'Phase 1: Ermittle Baseline...');
+            await sendRaw([0x55, 0xAA, 0x01, 0x00, 0x00], 'Baseline-Test');
+            await sleep(2000);
+            
+            // Speichere letzte Antwort als Baseline
+            if (responseHistory.length > 0) {
+                baselineResponse = responseHistory[responseHistory.length - 1];
+                logAnalysis('CRACK', baselineResponse.hex, 'Baseline gespeichert');
+            }
+            
+            // Phase 2: Systematischer Scan
+            for (let f = 0; f < formats.length && !crackAbort; f++) {
+                const fmt = formats[f];
+                logAnalysis('CRACK', '', `Format ${f+1}/${formats.length}: ${fmt.name}`);
+                
+                for (let cmd = 0x00; cmd <= cmdRange && !crackAbort; cmd++) {
+                    let bytes = [];
                     
-                    const payload = [c, v, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
-                    const bytes = [...header, ...payload];
-                    const cs = calcChecksum(bytes, 'xor');
-                    const full = [...bytes, ...cs];
-                    
-                    lastSentCommand = { bytes: full, cmd: c, val: v, raw: full.map(b=>b.toString(16).padStart(2,'0')).join(' ') };
-                    lastSentTime = Date.now();
-                    
-                    await sendRaw(full, `Brute CMD=0x${c.toString(16).padStart(2,'0')} VAL=0x${v.toString(16).padStart(2,'0')}`);
-                    
-                    // Warte auf Antwort (kurz)
-                    await sleep(200);
-                    
-                    // Prüfe auf Stille (wenn detectSilence aktiviert)
-                    if ($('detectSilence').checked) {
-                        const timeSinceRx = Date.now() - lastRxTime;
-                        if (timeSinceRx > 500 && lastSentTime > 0) {
-                            // Keine Antwort nach 500ms - könnte ein Treffer sein (Controller hat was gemacht statt zu antworten)
-                            logSniffer('SYS', '', `🤫 Stille nach CMD 0x${c.toString(16)} VAL 0x${v.toString(16)} - möglicher Treffer!`);
-                        }
+                    if (fmt.name === '0103+XOR') {
+                        bytes = [0x01, 0x03, 0x00, 0x00, 0x00, cmd, 0x00, 0x46, 0x00, 0x80, 0x02, 0x00, 0x00, 0x00];
+                        bytes.push(xorChecksum(bytes));
+                    } else if (fmt.name === '7E..7E') {
+                        bytes = [0x7E, 0x01, cmd, 0x00, 0x00, 0x00, 0x7E];
+                    } else if (fmt.name === 'RAW+XOR') {
+                        bytes = [cmd, 0x00, 0x00, 0x00, 0x00];
+                        bytes.push(xorChecksum(bytes));
+                    } else {
+                        const payload = [cmd, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+                        if (fmt.len) bytes = [...fmt.header, payload.length, ...payload];
+                        else bytes = [...fmt.header, ...payload];
+                        if (fmt.end) bytes = [...bytes, ...fmt.end];
+                        
+                        if (fmt.cs === 'xor') bytes.push(xorChecksum(bytes));
+                        else if (fmt.cs === 'sum') bytes.push(sumChecksum(bytes));
                     }
                     
-                    current++;
-                    const pct = Math.min((current / total) * 100, 100);
-                    $('bruteProgress').style.width = pct + '%';
-                    $('bruteStatus').textContent = `Teste ${current}/${total} (CMD 0x${c.toString(16).padStart(2,'0').toUpperCase()} VAL 0x${v.toString(16).padStart(2,'0').toUpperCase()})`;
+                    await sendRaw(bytes, `Crack ${fmt.name} CMD=0x${cmd.toString(16).padStart(2,'0')}`);
+                    
+                    currentTest++;
+                    $('crackProgress').style.width = Math.min((currentTest / totalTests) * 100, 100) + '%';
+                    $('crackStatus').textContent = `${fmt.name}: ${currentTest}/${totalTests} (CMD 0x${cmd.toString(16).padStart(2,'0').toUpperCase()})`;
                     
                     await sleep(delay);
                 }
             }
             
-            bruteForceRunning = false;
-            $('btnBruteStart').classList.remove('hidden');
-            $('btnBruteStop').classList.add('hidden');
-            $('bruteProgress').style.width = '0%';
-            $('bruteStatus').textContent = 'Fertig';
-            logSniffer('SYS', '', '🎯 Brute Force abgeschlossen.');
+            crackRunning = false;
+            $('btnCrack').classList.remove('hidden');
+            $('btnCrackStop').classList.add('hidden');
+            $('crackProgress').style.width = '0%';
+            $('statusBadge').className = 'badge ok';
+            $('statusText').textContent = 'Verbunden';
+            $('crackStatus').textContent = crackAbort ? 'Abgebrochen' : 'Fertig - Kein Treffer';
+            logAnalysis('CRACK', '', crackAbort ? '🛑 Abgebrochen.' : '🔐 Crack abgeschlossen.');
         }
 
-        function stopBruteForce() { bruteForceAbort = true; }
+        function stopCrack() { crackAbort = true; }
+
+        function xorChecksum(bytes) {
+            return bytes.reduce((a, b) => a ^ b, 0);
+        }
+
+        function sumChecksum(bytes) {
+            return bytes.reduce((a, b) => a + b, 0) & 0xFF;
+        }
+
+        // ========================================================================
+        // MANUAL
+        // ========================================================================
+        async function sendManual() {
+            const hex = $('manualHex').value.trim();
+            if (!hex) return;
+            const bytes = hex.split(/\s+/).map(b => parseInt(b, 16)).filter(x => !isNaN(x));
+            await sendRaw(bytes, 'Manuell');
+        }
+
+        async function quickSend(hex) {
+            const bytes = hex.split(/\s+/).map(b => parseInt(b, 16)).filter(x => !isNaN(x));
+            await sendRaw(bytes, 'Quick-Test');
+        }
+
+        // ========================================================================
+        // TUNER
+        // ========================================================================
+        async function sendUnlock() {
+            const saved = localStorage.getItem('zamelux_hit');
+            if (saved) {
+                const hit = JSON.parse(saved);
+                logAnalysis('SYS', '', '🔓 Gespeicherter Unlock...');
+                const bytes = hit.hex.split(' ').map(b => parseInt(b, 16));
+                await sendRaw(bytes, 'Saved Unlock');
+                return;
+            }
+            alert('Noch kein Unlock-Befehl gefunden! Führe zuerst den Cracker durch.');
+        }
+
+        async function sendReset() {
+            logAnalysis('SYS', '', '🔒 Reset...');
+            await sendRaw([0x55, 0xAA, 0x01, 0x05, 0x00], 'Reset 55AA');
+        }
+
+        async function sendCustomSpeed() {
+            const speed = parseInt($('customSpeed').value) || 20;
+            const hexVal = speed.toString(16).padStart(2, '0');
+            logAnalysis('SYS', '', `Speed ${speed}...`);
+            await sendRaw([0x55, 0xAA, 0x02, 0x1B, parseInt(hexVal, 16), 0x00], `Custom ${speed}`);
+        }
+
+        function useHit() {
+            if (!savedHit) return;
+            localStorage.setItem('zamelux_hit', JSON.stringify(savedHit));
+            logAnalysis('SYS', '', '✅ Treffer gespeichert!');
+            $('hitNotification').classList.add('hidden');
+            alert('Gespeichert! Wechsle zum Tuner-Tab.');
+        }
+
+        function clearLog() { $('analysisConsole').innerHTML = ''; }
+        function exportAnalysis() {
+            const data = {
+                patterns: detectedPatterns,
+                history: responseHistory,
+                savedHit: savedHit,
+                timestamp: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `cracker_analysis_${Date.now()}.json`; a.click();
+        }
 
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -1048,16 +864,9 @@
         // INIT
         // ========================================================================
         if (!navigator.bluetooth) {
-            logSniffer('SYS', '', '⚠️ Web Bluetooth nicht verfügbar. Chrome oder Bluefy (iOS) benötigt.');
+            logAnalysis('SYS', '', '⚠️ Web Bluetooth nicht verfügbar.');
         } else {
-            logSniffer('SYS', '', 'Bereit. Verbinde mit M0Robot.');
-        }
-        
-        // Lade gespeicherte Treffer
-        const saved = localStorage.getItem('zamelux_unlock_cmd');
-        if (saved) {
-            const cmd = JSON.parse(saved);
-            logSniffer('SYS', '', `📦 Gespeicherter Unlock-Befehl gefunden: CMD 0x${cmd.cmd.toString(16)} VAL 0x${cmd.val.toString(16)}`);
+            logAnalysis('SYS', '', '🔐 Advanced Protocol Cracker bereit.');
         }
     </script>
 </body>
