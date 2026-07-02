@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zamelux E9-2 Advanced Protocol Cracker</title>
+    <title>Lime Gen 4/4.1 BLE Commander</title>
     <style>
         :root {
             --bg: #0a0e1a;
             --card: #111827;
             --text: #f3f4f6;
             --muted: #6b7280;
-            --accent: #10b981;
-            --accent-dim: #059669;
-            --danger: #ef4444;
-            --danger-dim: #b91c1c;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --purple: #a855f7;
+            --accent: #32D74B;
+            --accent-dim: #248A3D;
+            --danger: #FF453A;
+            --danger-dim: #C4302B;
+            --warning: #FF9500;
+            --info: #0A84FF;
+            --purple: #BF5AF2;
             --border: #1f2937;
-            --success: #22c55e;
+            --success: #30D158;
+            --lime: #32D74B;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +35,7 @@
         .container { max-width: 720px; margin: 0 auto; }
 
         header { text-align: center; margin-bottom: 1.5rem; }
-        header h1 { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--info)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header h1 { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--lime), var(--info)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         header p { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
 
         .card {
@@ -68,7 +69,7 @@
             white-space: nowrap;
         }
         .tab.active {
-            background: linear-gradient(135deg, var(--accent), var(--info));
+            background: linear-gradient(135deg, var(--lime), var(--info));
             color: white;
             border-color: transparent;
         }
@@ -97,9 +98,9 @@
             color: var(--muted);
             border: 1px solid var(--border);
         }
-        .badge.ok { background: rgba(16,185,129,0.12); color: var(--accent); border-color: rgba(16,185,129,0.3); }
-        .badge.scanning { background: rgba(59,130,246,0.12); color: var(--info); border-color: rgba(59,130,246,0.3); animation: pulse 1.5s infinite; }
-        .badge.hit { background: rgba(168,85,247,0.15); color: var(--purple); border-color: rgba(168,85,247,0.4); }
+        .badge.ok { background: rgba(50,215,75,0.12); color: var(--lime); border-color: rgba(50,215,75,0.3); }
+        .badge.scanning { background: rgba(10,132,255,0.12); color: var(--info); border-color: rgba(10,132,255,0.3); animation: pulse 1.5s infinite; }
+        .badge.hit { background: rgba(191,90,242,0.15); color: var(--purple); border-color: rgba(191,90,242,0.4); }
         .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
         .btn {
@@ -121,11 +122,11 @@
         .btn-crack {
             background: linear-gradient(135deg, var(--danger), var(--purple));
             color: white;
-            box-shadow: 0 4px 15px rgba(239,68,68,0.3);
+            box-shadow: 0 4px 15px rgba(255,69,58,0.3);
         }
-        .btn-crack:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239,68,68,0.4); }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover:not(:disabled) { background: var(--accent-dim); }
+        .btn-crack:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,69,58,0.4); }
+        .btn-primary { background: var(--lime); color: #000; }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-dim); color: white; }
         .btn-secondary { background: #1f2937; color: var(--text); border: 1px solid var(--border); }
         .btn-secondary:hover:not(:disabled) { background: #374151; }
         .btn-info { background: var(--info); color: white; }
@@ -152,7 +153,7 @@
             font-family: inherit;
             font-size: 0.9rem;
         }
-        .field input:focus, .field select:focus { outline: none; border-color: var(--accent); }
+        .field input:focus, .field select:focus { outline: none; border-color: var(--lime); }
 
         .console {
             background: #030712;
@@ -169,7 +170,7 @@
         .entry:last-child { border-bottom: none; }
         .entry .ts { color: #374151; margin-right: 0.4rem; font-size: 0.7rem; }
         .entry .dir { font-weight: 800; margin-right: 0.3rem; }
-        .entry .dir.tx { color: var(--accent); }
+        .entry .dir.tx { color: var(--lime); }
         .entry .dir.rx { color: var(--info); }
         .entry .dir.crack { color: var(--purple); }
         .entry .dir.sys { color: var(--muted); }
@@ -202,13 +203,13 @@
             padding: 0.75rem;
             text-align: center;
         }
-        .stat-box .num { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
+        .stat-box .num { font-size: 1.25rem; font-weight: 800; color: var(--lime); }
         .stat-box .label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; margin-top: 0.2rem; }
 
         .hidden { display: none !important; }
 
         .hit-box {
-            background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(59,130,246,0.1));
+            background: linear-gradient(135deg, rgba(191,90,242,0.1), rgba(10,132,255,0.1));
             border: 2px solid var(--purple);
             border-radius: 0.75rem;
             padding: 1rem;
@@ -216,8 +217,8 @@
             animation: glow 2s infinite;
         }
         @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(168,85,247,0.2); }
-            50% { box-shadow: 0 0 20px rgba(168,85,247,0.4); }
+            0%, 100% { box-shadow: 0 0 5px rgba(191,90,242,0.2); }
+            50% { box-shadow: 0 0 20px rgba(191,90,242,0.4); }
         }
         .hit-box h3 { color: var(--purple); font-size: 1rem; margin-bottom: 0.5rem; }
         .hit-box .hex-display {
@@ -247,7 +248,7 @@
             font-size: 0.8rem;
         }
         .pattern-row:last-child { border-bottom: none; }
-        .pattern-row .val { color: var(--accent); font-family: monospace; }
+        .pattern-row .val { color: var(--lime); font-family: monospace; }
 
         .progress-bar {
             width: 100%;
@@ -259,7 +260,7 @@
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--info));
+            background: linear-gradient(90deg, var(--lime), var(--info));
             width: 0%;
             transition: width 0.5s;
         }
@@ -279,22 +280,42 @@
             text-align: center;
             transition: all 0.2s;
         }
-        .mode-card:hover { border-color: var(--accent); }
-        .mode-card.active { border-color: var(--accent); background: rgba(16,185,129,0.08); }
+        .mode-card:hover { border-color: var(--lime); }
+        .mode-card.active { border-color: var(--lime); background: rgba(50,215,75,0.08); }
         .mode-card h4 { font-size: 0.85rem; margin-bottom: 0.25rem; }
         .mode-card p { font-size: 0.7rem; color: var(--muted); }
+
+        .cmd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .cmd-card {
+            background: #030712;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .cmd-card:hover { border-color: var(--lime); background: rgba(50,215,75,0.05); }
+        .cmd-card h4 { font-size: 0.8rem; margin-bottom: 0.25rem; color: var(--text); }
+        .cmd-card p { font-size: 0.65rem; color: var(--muted); }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🔐 Zamelux E9-2 Protocol Cracker</h1>
-            <p>Smart Analysis • Pattern Correlation • Auto-Decrypt</p>
+            <h1>🛴 Lime Gen 4/4.1 BLE Commander</h1>
+            <p>Smart Protocol Cracker • Unlock/Lock • Speed Tuner</p>
         </header>
 
         <div class="card">
@@ -307,7 +328,7 @@
             </div>
 
             <button class="btn btn-primary" id="connectBtn" onclick="connect()">
-                <span>🔌</span> Mit M0Robot verbinden
+                <span>🔌</span> Mit Lime Roller verbinden
             </button>
             <div class="btn-row hidden" id="connectedActions">
                 <button class="btn btn-secondary" onclick="disconnect()">✕ Trennen</button>
@@ -326,6 +347,7 @@
 
         <div class="tabs">
             <div class="tab active" onclick="switchTab('cracker')">🔐 Cracker</div>
+            <div class="tab" onclick="switchTab('commands')">🛴 Commands</div>
             <div class="tab" onclick="switchTab('analysis')">📊 Analyse</div>
             <div class="tab" onclick="switchTab('manual')">🎮 Manuell</div>
             <div class="tab" onclick="switchTab('tuner')">🔧 Tuner</div>
@@ -335,7 +357,7 @@
         <div id="tab-cracker" class="tab-content active">
             <div class="card">
                 <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase;">Cracker-Modus wählen</h3>
-                
+
                 <div class="mode-selector">
                     <div class="mode-card active" onclick="selectMode('smart')" id="modeSmart">
                         <h4>🧠 Smart Fuzzer</h4>
@@ -390,6 +412,51 @@
             </div>
         </div>
 
+        <!-- TAB: COMMANDS (NEW) -->
+        <div id="tab-commands" class="tab-content">
+            <div class="card">
+                <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase;">Bekannte Lime Commands</h3>
+                <div class="cmd-grid">
+                    <div class="cmd-card" onclick="sendKnownCmd('unlock')">
+                        <h4>🔓 Unlock</h4>
+                        <p>Scooter entsperren</p>
+                    </div>
+                    <div class="cmd-card" onclick="sendKnownCmd('lock')">
+                        <h4>🔒 Lock</h4>
+                        <p>Scooter sperren</p>
+                    </div>
+                    <div class="cmd-card" onclick="sendKnownCmd('ping')">
+                        <h4>📡 Ping</h4>
+                        <p>Verbindung testen</p>
+                    </div>
+                    <div class="cmd-card" onclick="sendKnownCmd('info')">
+                        <h4>ℹ️ Info</h4>
+                        <p>Geräteinfo abfragen</p>
+                    </div>
+                    <div class="cmd-card" onclick="sendKnownCmd('battery')">
+                        <h4>🔋 Battery</h4>
+                        <p>Akku-Status abfragen</p>
+                    </div>
+                    <div class="cmd-card" onclick="sendKnownCmd('status')">
+                        <h4>📊 Status</h4>
+                        <p>Scooter-Status abfragen</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--muted);">Lime Gen 4/4.1 BLE Services</h3>
+                <div style="font-size: 0.75rem; color: var(--muted); line-height: 1.8;">
+                    <p><strong>Service:</strong> 0xFFF0 (Custom)</p>
+                    <p><strong>Write (CMD):</strong> 0xFFF1 (R/W)</p>
+                    <p><strong>Read (RX):</strong> 0xFFF2 (R)</p>
+                    <p><strong>Write (CMD2):</strong> 0x36F5 (W)</p>
+                    <p><strong>Notify (Status):</strong> 0x36F6 (N)</p>
+                    <p><strong>Read/Notify:</strong> 0xFFF5 (R), 0xFFF6 (R/W/N), 0xFFF7 (R/W/N)</p>
+                </div>
+            </div>
+        </div>
+
         <!-- TAB: ANALYSIS -->
         <div id="tab-analysis" class="tab-content">
             <div class="card">
@@ -399,7 +466,7 @@
                 </div>
                 <div class="console" id="analysisConsole"></div>
             </div>
-            
+
             <div class="analysis-panel">
                 <h4>📊 Erkannte Muster</h4>
                 <div id="patternList">
@@ -460,17 +527,46 @@
         </div>
 
         <div class="card" style="text-align: center; font-size: 0.7rem; color: var(--muted); border: none; background: transparent;">
-            <p>HW9027-ZYD009-E9 • 36V 16A • Nordic UART</p>
+            <p>Lime Gen 4/4.1 • BLE 5.0 • Nordic UART</p>
             <p style="margin-top: 0.2rem;">Nur für Privatgelände.</p>
         </div>
     </div>
 
     <script>
-        const UART_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-        const UART_RX = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-        const UART_TX = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+        // ========================================================================
+        // LIME GEN 4/4.1 BLE CONFIGURATION
+        // ========================================================================
+        // Based on BLE scan: lime-931303636140
+        // Custom Service: 0xFFF0
+        // Characteristics from scan:
+        //   0xFFF1 - R/W (Custom CMD)
+        //   0xFFF2 - R (Custom RX)
+        //   0x36F5 - W (Write CMD)
+        //   0x36F6 - N (Notify Status)
+        //   0xFFF5 - R (Read)
+        //   0xFFF6 - R/W/N (Read/Write/Notify)
+        //   0xFFF7 - R/W/N (Read/Write/Notify)
+        //   0x2901 - User Description (Descriptor)
+        //   0x2902 - Client Characteristic Config (Descriptor)
+        //
+        // Known Lime Gen 3/4 commands from research:
+        //   unlock: 4643110100084C494D4542494B45BE8A (UART @ 9600 baud)
+        //   lock:   similar format
+        //   ping:   5AA5003E215B00
+        //   unlockFirmware: 5AA5023D20037A0000
+        //   lockFirmware:   5AA5023D20037A0100
+        // ========================================================================
 
-        let device = null, server = null, rxChar = null, txChar = null;
+        const LIME_SERVICE = 'fff0';
+        const LIME_CMD_CHAR = 'fff1';      // Write commands
+        const LIME_RX_CHAR = 'fff2';       // Read responses
+        const LIME_WRITE_CHAR = '36f5';    // Alternative write
+        const LIME_NOTIFY_CHAR = '36f6';   // Notifications
+        const LIME_RWN_CHAR = 'fff6';      // Read/Write/Notify
+        const LIME_RWN2_CHAR = 'fff7';     // Read/Write/Notify
+
+        let device = null, server = null;
+        let cmdChar = null, rxChar = null, writeChar = null, notifyChar = null, rwnChar = null;
         let isConnected = false;
         let crackRunning = false, crackAbort = false;
         let txCount = 0, rxCount = 0, patternCount = 0, hitCount = 0;
@@ -499,7 +595,7 @@
             const ts = new Date().toLocaleTimeString('de-DE', {hour12:false});
             const dirClass = direction === 'TX' ? 'tx' : (direction === 'RX' ? 'rx' : (direction === 'CRACK' ? 'crack' : 'sys'));
             const dirIcon = direction === 'TX' ? '➡️' : (direction === 'RX' ? '⬅️' : (direction === 'CRACK' ? '🔐' : '⚙️'));
-            
+
             const entry = document.createElement('div');
             entry.className = 'entry';
             entry.innerHTML = `<span class="ts">${ts}</span><span class="dir ${dirClass}">${dirIcon} ${direction}</span><span class="hex">${hex}</span><span class="note">${note}</span>`;
@@ -510,29 +606,97 @@
         async function connect() {
             try {
                 if (!navigator.bluetooth) { alert('Web Bluetooth nicht verfügbar. Nutze Chrome oder Bluefy.'); return; }
-                logAnalysis('SYS', '', 'Scanne nach M0Robot...');
-                
+                logAnalysis('SYS', '', 'Scanne nach Lime Roller...');
+
                 device = await navigator.bluetooth.requestDevice({
-                    filters: [{ namePrefix: 'M0Robot' }, { services: [UART_SERVICE] }],
-                    optionalServices: [UART_SERVICE]
+                    filters: [
+                        { namePrefix: 'lime' },
+                        { namePrefix: 'Lime' }
+                    ],
+                    optionalServices: [
+                        'fff0',
+                        '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
+                        '0000fff0-0000-1000-8000-00805f9b34fb'
+                    ]
                 });
 
                 $('deviceName').textContent = device.name || 'Unbekannt';
                 logAnalysis('SYS', '', `Gefunden: ${device.name}`);
-                
+
                 device.addEventListener('gattserverdisconnected', onDisconnect);
                 server = await device.gatt.connect();
-                const service = await server.getPrimaryService(UART_SERVICE);
-                rxChar = await service.getCharacteristic(UART_RX);
-                txChar = await service.getCharacteristic(UART_TX);
-                
-                await txChar.startNotifications();
-                txChar.addEventListener('characteristicvaluechanged', handleNotification);
-                
+
+                // Try to get the Lime custom service first
+                let service;
+                try {
+                    service = await server.getPrimaryService('fff0');
+                    logAnalysis('SYS', '', '✅ Lime Service 0xFFF0 gefunden');
+                } catch(e) {
+                    try {
+                        service = await server.getPrimaryService('0000fff0-0000-1000-8000-00805f9b34fb');
+                        logAnalysis('SYS', '', '✅ Lime Service (full UUID) gefunden');
+                    } catch(e2) {
+                        try {
+                            service = await server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
+                            logAnalysis('SYS', '', '✅ Nordic UART Service gefunden');
+                        } catch(e3) {
+                            logAnalysis('SYS', '', '❌ Kein bekannter Service gefunden');
+                            throw new Error('Kein kompatibler Service');
+                        }
+                    }
+                }
+
+                // Get characteristics
+                const characteristics = await service.getCharacteristics();
+                logAnalysis('SYS', '', `${characteristics.length} Characteristics gefunden`);
+
+                for (const char of characteristics) {
+                    const uuid = char.uuid;
+                    logAnalysis('SYS', '', `Char: ${uuid} | Props: ${Object.keys(char.properties).filter(k => char.properties[k]).join(',')}`);
+
+                    if (uuid.includes('fff1') || uuid === LIME_CMD_CHAR) {
+                        cmdChar = char;
+                        logAnalysis('SYS', '', 'CMD Char (0xFFF1) zugewiesen');
+                    }
+                    if (uuid.includes('fff2') || uuid === LIME_RX_CHAR) {
+                        rxChar = char;
+                        logAnalysis('SYS', '', 'RX Char (0xFFF2) zugewiesen');
+                    }
+                    if (uuid.includes('36f5') || uuid === LIME_WRITE_CHAR) {
+                        writeChar = char;
+                        logAnalysis('SYS', '', 'Write Char (0x36F5) zugewiesen');
+                    }
+                    if (uuid.includes('36f6') || uuid === LIME_NOTIFY_CHAR) {
+                        notifyChar = char;
+                        logAnalysis('SYS', '', 'Notify Char (0x36F6) zugewiesen');
+                    }
+                    if (uuid.includes('fff6') || uuid === LIME_RWN_CHAR) {
+                        rwnChar = char;
+                        logAnalysis('SYS', '', 'RWN Char (0xFFF6) zugewiesen');
+                    }
+                    if (uuid.includes('fff7') || uuid === LIME_RWN2_CHAR) {
+                        if (!rwnChar) rwnChar = char;
+                        logAnalysis('SYS', '', 'RWN2 Char (0xFFF7) zugewiesen');
+                    }
+                }
+
+                // Start notifications on all notify-capable characteristics
+                for (const char of characteristics) {
+                    if (char.properties.notify || char.properties.indicate) {
+                        try {
+                            await char.startNotifications();
+                            char.addEventListener('characteristicvaluechanged', handleNotification);
+                            logAnalysis('SYS', '', `🔔 Notifications aktiviert: ${char.uuid}`);
+                        } catch(e) {
+                            logAnalysis('SYS', '', `⚠️ Notifications fehlgeschlagen: ${char.uuid}`);
+                        }
+                    }
+                }
+
                 isConnected = true;
                 updateUI();
-                logAnalysis('SYS', '', '✅ Verbunden. Cracker bereit.');
-                
+                logAnalysis('SYS', '', '✅ Verbunden. Commander bereit.');
+
             } catch(err) {
                 logAnalysis('SYS', '', `❌ Fehler: ${err.message}`);
             }
@@ -544,7 +708,8 @@
         }
 
         function onDisconnect() {
-            isConnected = false; rxChar = null; txChar = null;
+            isConnected = false;
+            cmdChar = null; rxChar = null; writeChar = null; notifyChar = null; rwnChar = null;
             updateUI();
             logAnalysis('SYS', '', '🔌 Getrennt');
         }
@@ -553,11 +718,10 @@
             const val = event.target.value;
             const bytes = new Uint8Array(val.buffer);
             const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(' ');
-            
+
             rxCount++; $('statRx').textContent = rxCount;
-            logAnalysis('RX', hex, `${bytes.length} Bytes`);
-            
-            // Smart Analysis
+            logAnalysis('RX', hex, `${bytes.length} Bytes | ${event.target.uuid}`);
+
             if (crackRunning) {
                 analyzeResponse(hex, bytes);
             }
@@ -588,18 +752,29 @@
             }
         }
 
-        async function sendRaw(bytes, note='') {
-            if (!isConnected || !rxChar) { logAnalysis('SYS', '', 'Nicht verbunden!'); return false; }
+        async function sendRaw(bytes, note='', targetChar=null) {
+            if (!isConnected) { logAnalysis('SYS', '', 'Nicht verbunden!'); return false; }
+
+            let char = targetChar;
+            if (!char) {
+                // Prefer writeChar (0x36F5) for Lime, fallback to cmdChar (0xFFF1)
+                if (writeChar && writeChar.properties.write) char = writeChar;
+                else if (cmdChar && (cmdChar.properties.write || cmdChar.properties.writeWithoutResponse)) char = cmdChar;
+                else if (rwnChar && (rwnChar.properties.write || rwnChar.properties.writeWithoutResponse)) char = rwnChar;
+            }
+
+            if (!char) { logAnalysis('SYS', '', 'Keine Write-Characteristic verfügbar!'); return false; }
+
             try {
                 const hex = bytes.map(b => b.toString(16).padStart(2,'0')).join(' ');
                 txCount++; $('statTx').textContent = txCount;
-                logAnalysis('TX', hex, note);
-                
+                logAnalysis('TX', hex, `${note} → ${char.uuid.slice(-4)}`);
+
                 const buf = new Uint8Array(bytes);
-                if (rxChar.properties.writeWithoutResponse) {
-                    await rxChar.writeValueWithoutResponse(buf);
+                if (char.properties.writeWithoutResponse) {
+                    await char.writeValueWithoutResponse(buf);
                 } else {
-                    await rxChar.writeValueWithResponse(buf);
+                    await char.writeValueWithResponse(buf);
                 }
                 return true;
             } catch(err) {
@@ -609,32 +784,73 @@
         }
 
         // ========================================================================
+        // KNOWN LIME COMMANDS
+        // ========================================================================
+        async function sendKnownCmd(type) {
+            if (!isConnected) { logAnalysis('SYS', '', 'Nicht verbunden!'); return; }
+
+            let bytes = [];
+            let note = '';
+
+            switch(type) {
+                case 'unlock':
+                    // Lime Gen 3 UART unlock command (translated to BLE)
+                    // 4643110100084C494D4542494B45BE8A
+                    bytes = [0x46, 0x43, 0x11, 0x01, 0x00, 0x08, 0x4C, 0x49, 0x4D, 0x45, 0x42, 0x49, 0x4B, 0x45, 0xBE, 0x8A];
+                    note = 'Lime Unlock CMD';
+                    break;
+                case 'lock':
+                    bytes = [0x46, 0x43, 0x11, 0x02, 0x00, 0x08, 0x4C, 0x49, 0x4D, 0x45, 0x42, 0x49, 0x4B, 0x45, 0xBE, 0x8B];
+                    note = 'Lime Lock CMD';
+                    break;
+                case 'ping':
+                    // Ninebot-style ping (Lime Gen 4 uses similar)
+                    bytes = [0x5A, 0xA5, 0x00, 0x3E, 0x21, 0x5B, 0x00];
+                    note = 'Ping/Init';
+                    break;
+                case 'info':
+                    bytes = [0x5A, 0xA5, 0x01, 0x3E, 0x21, 0x5C, 0x00];
+                    note = 'Info Request';
+                    break;
+                case 'battery':
+                    bytes = [0x5A, 0xA5, 0x01, 0x22, 0x01, 0x31, 0x00];
+                    note = 'Battery Status';
+                    break;
+                case 'status':
+                    bytes = [0x5A, 0xA5, 0x01, 0x20, 0x01, 0x2F, 0x00];
+                    note = 'Scooter Status';
+                    break;
+                default:
+                    logAnalysis('SYS', '', 'Unbekannter Command-Typ');
+                    return;
+            }
+
+            await sendRaw(bytes, note);
+        }
+
+        // ========================================================================
         // SMART ANALYSIS ENGINE
         // ========================================================================
         function analyzeResponse(hex, bytes) {
             responseHistory.push({ hex, bytes, time: Date.now() });
-            
-            // 1. Prüfe auf Baseline-Differenz
+
             if (baselineResponse && baselineResponse.hex !== hex) {
                 const diff = findByteDifference(baselineResponse.bytes, bytes);
                 if (diff.length > 0) {
                     patternCount++; $('statPatterns').textContent = patternCount;
                     logAnalysis('CRACK', hex, `MUSTER! Bytes ${diff.map(d=>d.pos).join(',')} ändern sich`);
                     addPattern(`Baseline-Diff`, `Bytes ${diff.map(d=>`[${d.pos}]=0x${d.val.toString(16)}`).join(', ')}`);
-                    
-                    // Wenn sich mehr als 2 Bytes ändern, könnte das ein Status-Update sein
+
                     if (diff.length >= 2) {
                         checkForHit(hex, bytes, 'Baseline-Differenz erkannt');
                     }
                 }
             }
-            
-            // 2. Prüfe auf ungewöhnliche Länge
+
             if (bytes.length >= 6) {
                 logAnalysis('CRACK', hex, `Ungewöhnliche Länge: ${bytes.length} Bytes`);
             }
-            
-            // 3. Prüfe auf bekannte ACK-Muster
+
             if (bytes.length === 1 && bytes[0] === 0x00) {
                 logAnalysis('CRACK', hex, 'ACK (0x00)');
             }
@@ -669,19 +885,18 @@
         }
 
         function checkForHit(hex, bytes, reason) {
-            if (hitCount > 0) return; // Nur ersten Treffer speichern
+            if (hitCount > 0) return;
             hitCount++; $('statHits').textContent = hitCount;
             savedHit = { hex, bytes, reason };
-            
+
             logAnalysis('CRACK', hex, `🎯 TREFFER: ${reason}`);
-            
+
             $('hitHex').textContent = hex;
             $('hitFormat').textContent = reason;
             $('hitNotification').classList.remove('hidden');
-            
+
             if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
-            
-            // Stoppe Crack
+
             crackAbort = true;
         }
 
@@ -696,18 +911,17 @@
             $('hitNotification').classList.add('hidden');
             $('statusBadge').className = 'badge scanning';
             $('statusText').textContent = 'Crackt...';
-            
+
             const depth = $('scanDepth').value;
             const delay = parseInt($('scanDelay').value) || 1500;
-            
-            // Formate basierend auf Tiefe
+
             let formats = [
                 { name: '55AA+XOR', header: [0x55, 0xAA], len: true, cs: 'xor' },
                 { name: '5AA5+XOR', header: [0x5A, 0xA5], len: true, cs: 'xor' },
                 { name: '0103+XOR', header: [0x01, 0x03], len: false, cs: 'xor', fixed: [0x00,0x00,0x00] },
                 { name: 'A55A+XOR', header: [0xA5, 0x5A], len: true, cs: 'xor' }
             ];
-            
+
             if (depth === 'normal' || depth === 'deep') {
                 formats.push(
                     { name: '55AA+SUM', header: [0x55, 0xAA], len: true, cs: 'sum' },
@@ -720,32 +934,29 @@
                     { name: 'FFFF+XOR', header: [0xFF, 0xFF], len: true, cs: 'xor' }
                 );
             }
-            
+
             let cmdRange = depth === 'fast' ? 0x3F : (depth === 'normal' ? 0x7F : 0xFF);
             let totalTests = formats.length * (cmdRange + 1);
             let currentTest = 0;
-            
+
             logAnalysis('CRACK', '', `🔐 STARTE CRACK: ${formats.length} Formate, CMD 0x00-0x${cmdRange.toString(16).toUpperCase()}, ${totalTests} Tests`);
-            
-            // Phase 1: Baseline ermitteln
+
             logAnalysis('CRACK', '', 'Phase 1: Ermittle Baseline...');
             await sendRaw([0x55, 0xAA, 0x01, 0x00, 0x00], 'Baseline-Test');
             await sleep(2000);
-            
-            // Speichere letzte Antwort als Baseline
+
             if (responseHistory.length > 0) {
                 baselineResponse = responseHistory[responseHistory.length - 1];
                 logAnalysis('CRACK', baselineResponse.hex, 'Baseline gespeichert');
             }
-            
-            // Phase 2: Systematischer Scan
+
             for (let f = 0; f < formats.length && !crackAbort; f++) {
                 const fmt = formats[f];
                 logAnalysis('CRACK', '', `Format ${f+1}/${formats.length}: ${fmt.name}`);
-                
+
                 for (let cmd = 0x00; cmd <= cmdRange && !crackAbort; cmd++) {
                     let bytes = [];
-                    
+
                     if (fmt.name === '0103+XOR') {
                         bytes = [0x01, 0x03, 0x00, 0x00, 0x00, cmd, 0x00, 0x46, 0x00, 0x80, 0x02, 0x00, 0x00, 0x00];
                         bytes.push(xorChecksum(bytes));
@@ -759,21 +970,21 @@
                         if (fmt.len) bytes = [...fmt.header, payload.length, ...payload];
                         else bytes = [...fmt.header, ...payload];
                         if (fmt.end) bytes = [...bytes, ...fmt.end];
-                        
+
                         if (fmt.cs === 'xor') bytes.push(xorChecksum(bytes));
                         else if (fmt.cs === 'sum') bytes.push(sumChecksum(bytes));
                     }
-                    
+
                     await sendRaw(bytes, `Crack ${fmt.name} CMD=0x${cmd.toString(16).padStart(2,'0')}`);
-                    
+
                     currentTest++;
                     $('crackProgress').style.width = Math.min((currentTest / totalTests) * 100, 100) + '%';
                     $('crackStatus').textContent = `${fmt.name}: ${currentTest}/${totalTests} (CMD 0x${cmd.toString(16).padStart(2,'0').toUpperCase()})`;
-                    
+
                     await sleep(delay);
                 }
             }
-            
+
             crackRunning = false;
             $('btnCrack').classList.remove('hidden');
             $('btnCrackStop').classList.add('hidden');
@@ -813,7 +1024,7 @@
         // TUNER
         // ========================================================================
         async function sendUnlock() {
-            const saved = localStorage.getItem('zamelux_hit');
+            const saved = localStorage.getItem('lime_hit');
             if (saved) {
                 const hit = JSON.parse(saved);
                 logAnalysis('SYS', '', '🔓 Gespeicherter Unlock...');
@@ -821,7 +1032,8 @@
                 await sendRaw(bytes, 'Saved Unlock');
                 return;
             }
-            alert('Noch kein Unlock-Befehl gefunden! Führe zuerst den Cracker durch.');
+            // Fallback: send known unlock command
+            await sendKnownCmd('unlock');
         }
 
         async function sendReset() {
@@ -838,7 +1050,7 @@
 
         function useHit() {
             if (!savedHit) return;
-            localStorage.setItem('zamelux_hit', JSON.stringify(savedHit));
+            localStorage.setItem('lime_hit', JSON.stringify(savedHit));
             logAnalysis('SYS', '', '✅ Treffer gespeichert!');
             $('hitNotification').classList.add('hidden');
             alert('Gespeichert! Wechsle zum Tuner-Tab.');
@@ -855,7 +1067,7 @@
             const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url; a.download = `cracker_analysis_${Date.now()}.json`; a.click();
+            a.href = url; a.download = `lime_analysis_${Date.now()}.json`; a.click();
         }
 
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -866,7 +1078,7 @@
         if (!navigator.bluetooth) {
             logAnalysis('SYS', '', '⚠️ Web Bluetooth nicht verfügbar.');
         } else {
-            logAnalysis('SYS', '', '🔐 Advanced Protocol Cracker bereit.');
+            logAnalysis('SYS', '', '🔐 Lime Gen 4/4.1 BLE Commander bereit.');
         }
     </script>
 </body>
